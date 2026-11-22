@@ -55,6 +55,7 @@ body {
 button, input, textarea { font: inherit; color: inherit; }
 
 .page {
+  overflow: clip;
   min-height: 100%;
   display: grid;
   grid-template-rows: auto 1fr auto;
@@ -193,7 +194,7 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
 
 /* Footer */
 .foot { display: flex; justify-content: space-between; gap: 16px; font-size: 12px; line-height: 1.2; letter-spacing: 0.01em; color: var(--ink-light); flex-wrap: wrap; }
-.history { display: flex; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.history { min-height: 22px; display: flex; gap: 8px; flex-wrap: wrap; min-width: 0; }
 .history span { unicode-bidi: plaintext; font-family: var(--font-en); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 10px; border-radius: 12px; background: var(--orange-light); color: var(--ink-medium); }
 
 /* Settings sheet */
@@ -251,6 +252,44 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
 @media (max-height: 860px) and (min-width: 561px) { :root { --row: 124px; } }
 @media (max-height: 700px) { :root { --row: 128px; --rows: 2.2; } .go { height: 52px; } .stage { padding-block: 12px; gap: 16px; } }
 @media (max-width: 380px) { .slot { padding: 0 32px; font-size: 16px; line-height: 1.2; letter-spacing: 0; } }
+@media (max-width: 340px) { :root { --row: 146px; } .slot { padding: 0 22px; } .slot-text { -webkit-line-clamp: 7; } .headline { font-size: 24px; letter-spacing: 0; } }
+/* ---- Large screens: scale up on BAE type-scale steps ---- */
+@media (min-width: 1024px) and (min-height: 700px) and (max-height: 899px) {      /* iPad landscape, laptops */
+  :root { --row: 164px; --rows: 2.3; }
+  .reel-wrap { width: min(100%, 820px); }
+  .slot { font-size: 32px; letter-spacing: -0.01em; line-height: 1.1; padding: 0 56px; }
+}
+@media (min-width: 744px) and (min-height: 900px) {                              /* iPad portrait, big monitors */
+  :root { --row: 188px; --rows: 2.6; }
+  .reel-wrap { width: min(100%, 900px); }
+  .slot { font-size: 32px; letter-spacing: -0.01em; line-height: 1.1; padding: 0 64px; }
+  .headline { font-size: 80px; letter-spacing: -0.04em; line-height: 1; }
+  .stage { gap: 40px; }
+  .go { height: 88px; min-width: 300px; padding: 0 56px; font-size: 32px; letter-spacing: -0.01em; }
+  .go::after { inset: -10px; }
+  .result { font-size: 24px; letter-spacing: 0; }
+  .hint, kbd { font-size: 16px; letter-spacing: 0; }
+  .logo { height: 48px; }
+  .chip { height: 52px; min-width: 52px; border-radius: 26px; font-size: 20px; }
+  .chip svg { width: 22px; height: 22px; }
+}
+@media (min-width: 1800px) and (min-height: 1200px) {                            /* 2K / 4K screens */
+  :root { --row: 228px; }
+  .reel-wrap { width: min(100%, 1100px); }
+  .slot { font-size: 40px; padding: 0 80px; }
+  .headline { font-size: 120px; }
+  .go { height: 104px; min-width: 360px; font-size: 40px; }
+  .logo { height: 60px; }
+}
+/* ---- Phones on their side: fit one screen ---- */
+@media (max-height: 500px) and (orientation: landscape) {
+  :root { --row: 112px; --rows: 1.75; }
+  .headline, .hint, .foot { display: none; }
+  .stage { gap: 10px; padding-block: 4px; }
+  .page { padding-block: 10px; }
+  .go { height: 48px; }
+  .logo { height: 28px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .glow i, .go.spinning::after { animation: none; }
   .is-won .reel::after, .is-won .slot.center .slot-text { animation: none; transition: none; }
@@ -452,7 +491,31 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
 
   function rowPx() { return parseFloat(getComputedStyle(root).getPropertyValue("--row")) || 136; }
   let ROW = rowPx();
-  addEventListener("resize", () => { ROW = rowPx(); render(); });
+  // ---- Fit: size the reel so the longest challenge fits the pill and the whole page fits one screen ----
+  const probe = document.createElement("div");
+  probe.className = "slot"; probe.setAttribute("aria-hidden", "true");
+  probe.style.cssText = "visibility:hidden;height:auto;transform:none;top:0;margin:0;";
+  probe.innerHTML = '<span class="slot-text" style="-webkit-line-clamp:unset;display:block"></span>';
+  reel.appendChild(probe);
+  function fit() {
+    root.style.removeProperty("--row"); root.style.removeProperty("--rows");
+    const cs = getComputedStyle(root);
+    let row = parseFloat(cs.getPropertyValue("--row")) || 136;
+    let rows = parseFloat(cs.getPropertyValue("--rows")) || 2.7;
+    const t = probe.firstChild; let tall = 0;
+    for (const g of gifts) { t.textContent = g; tall = Math.max(tall, t.getBoundingClientRect().height); }
+    const need = Math.ceil(tall + 32);                       // text + breathing room inside the pill (+8 window inset)
+    row = Math.max(row, need);
+    const set = () => { root.style.setProperty("--row", row + "px"); root.style.setProperty("--rows", rows); };
+    set();
+    let over = document.documentElement.scrollHeight - innerHeight;
+    if (over > 0) { rows = Math.max(innerHeight < 500 ? 1.25 : 1.5, rows - over / row); set(); over = document.documentElement.scrollHeight - innerHeight; }
+    if (over > 0) { row = Math.max(need, row - over / rows); set(); }
+    ROW = rowPx(); render();
+  }
+  let fitTimer = 0;
+  addEventListener("resize", () => { cancelAnimationFrame(fitTimer); fitTimer = requestAnimationFrame(fit); });
+  document.fonts && document.fonts.ready.then(fit);
 
   const mod = (a, n) => ((a % n) + n) % n;
 
@@ -800,7 +863,7 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
       setGifts();
       if (landRow != null && landGift != null) { const i = SAMPLE[lang === "ar" ? "en" : "ar"].indexOf(landGift); if (i > -1) landGift = gifts[i]; }
     }
-    applyLang(); render();
+    applyLang(); render(); fit();
   });
 
   // ---- Sound toggle ----
@@ -855,7 +918,7 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
     if (list.join("\n") !== gifts.join("\n")) { bag = null; store.set("bag", null); }   // a new list starts a new round
     landRow = null; landGift = null;
     setGifts(); mode = "idle"; stage.classList.remove("is-won"); stage.classList.add("is-idle"); clearTimeout(swapTimer); result.classList.remove("out"); result.textContent = "";
-    updateCount(); setButton(); render(); closeSheet();
+    updateCount(); setButton(); render(); fit(); closeSheet();
   });
   $("resetBtn").addEventListener("click", () => { input.value = SAMPLE[lang].join("\n"); });
   $("newRoundBtn").addEventListener("click", () => { bag = null; store.set("bag", null); drawRound(); });
@@ -867,7 +930,7 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
     else if (!e.shiftKey && document.activeElement === lastEl) { e.preventDefault(); first.focus(); }
   });
 
-  setGifts(); drawSound(); applyLang(); render();
+  setGifts(); drawSound(); applyLang(); render(); fit();
   requestAnimationFrame((t) => { last = t; requestAnimationFrame(frame); });
 })();
 </script>
