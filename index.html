@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#FFFFFF">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Bank al Etihad Christmas Challenge</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400&family=IBM+Plex+Sans+Arabic:wght@400&display=swap">
+<style>
+/* Layout: one centred column on white. Wordmark top (right in Arabic), reel in the middle
+   framed by a slowly turning blurred-orange gradient, one round orange button under it.
+   Palette = BAE Tier 01/02 tokens only. One weight (Regular). 7% side margins. */
+:root {
+  --white: #FFFFFF;
+  --orange: #FA6428;
+  --orange-dark: #C13A23;
+  --orange-medium: #FB9A75;
+  --orange-soft: #FDCBB4;
+  --orange-light: #FFFAF4;
+  --stone-light: #ECE8DF;
+  --stone: #CCC3B4;
+  --ink: #19181E;
+  --ink-medium: #4F4E62;
+  --ink-light: #75738D;
+  --burgundy-light: #F1C0B6;
+
+  --font-en: "GT Walsheim", "DM Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-ar: "Avenir Arabic", "IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+  --font: var(--font-ar);
+
+  --margin: 7vw;
+  --row: 136px;
+  --rows: 2.7;
+  color-scheme: light;
+}
+:root[lang="en"] { --font: var(--font-en); }
+html, body { height: 100%; }
+html { overflow-x: clip; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font);
+  font-weight: 400;
+  line-height: 1.2;
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; font-weight: 400; }
+button, input, textarea { font: inherit; color: inherit; }
+
+.page {
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: minmax(0, 1fr);
+  padding-left: max(16px, env(safe-area-inset-left, 0px), var(--margin));
+  padding-right: max(16px, env(safe-area-inset-right, 0px), var(--margin));
+  padding-block: max(16px, min(var(--margin), 5vh));
+}
+
+/* Header */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+/* Official lockups from the BAE logo file, used as supplied (black on white = approved monochrome pair) */
+.wordmark { min-width: 0; display: flex; align-items: center; color: #000; }
+.logo { display: block; height: 36px; width: auto; max-width: 100%; }
+:root[lang="ar"] .logo-en, :root:not([lang="ar"]) .logo-ar { display: none; }
+.tools { display: flex; gap: 8px; }
+.chip {
+  height: 44px; min-width: 44px; padding: 0 14px; border-radius: 22px;
+  border: 1px solid var(--stone-light); background: var(--white); color: var(--ink-medium);
+  font-size: 16px; line-height: 1.2; letter-spacing: 0; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; transition: border-color .15s, color .15s, background .15s;
+}
+.chip:hover { border-color: var(--stone); color: var(--ink); }
+.chip svg { width: 18px; height: 18px; }
+.chip[aria-pressed="false"] .on { display: none; }
+.chip[aria-pressed="true"] .off { display: none; }
+
+/* Stage */
+.stage { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(20px, 3.6vh, 36px); padding-block: 24px; text-align: center; }
+.headline { margin: 0; font-size: 40px; line-height: 1.1; letter-spacing: -0.01em; text-wrap: balance; color: var(--ink); }
+.intro { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+
+/* Reel */
+.reel-wrap { position: relative; width: min(100%, 680px); }
+.glow { position: absolute; inset: -4% -8%; pointer-events: none; z-index: 0; filter: blur(56px); opacity: .45; transition: opacity .9s linear; }
+.glow i { position: absolute; border-radius: 50%; animation: turn 30s linear infinite; }
+.glow i:nth-child(1) { width: 62%; height: 70%; left: 4%; top: 12%; background: var(--orange-soft); transform-origin: 70% 40%; }
+.glow i:nth-child(2) { width: 46%; height: 56%; right: 6%; top: 22%; background: var(--burgundy-light); transform-origin: 30% 60%; animation-duration: 30s; }
+.glow i:nth-child(3) { width: 38%; height: 40%; left: 30%; bottom: 4%; background: var(--orange-medium); transform-origin: 50% 20%; opacity: .7; }
+@keyframes turn { to { transform: rotate(360deg); } }
+.is-won .glow { opacity: .8; }
+
+.reel {
+  position: relative; z-index: 1;
+  height: calc(var(--row) * var(--rows));
+  border-radius: 28px;
+  background: rgba(255,255,255,.82);
+  box-shadow: 0 1px 0 rgba(25,24,30,.04), 0 18px 48px -24px rgba(25,24,30,.18);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 34%, #000 66%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0, #000 34%, #000 66%, transparent 100%);
+}
+.reel::before { /* centre window */
+  content: ""; position: absolute; left: 16px; right: 16px; top: 50%; height: calc(var(--row) - 8px);
+  transform: translateY(-50%); border-radius: 999px; background: var(--orange-light);
+  border: 1px solid var(--orange-soft); transition: background .4s, border-color .4s;
+}
+.is-won .reel::before { background: var(--orange); border-color: var(--orange); }
+.slot {
+  position: absolute; left: 0; right: 0; top: 50%; height: var(--row); margin-top: calc(var(--row) / -2);
+  display: flex; align-items: center; justify-content: center; padding: 0 44px;
+  font-size: 24px; line-height: 1.1; letter-spacing: 0;
+  overflow: hidden;
+  will-change: transform, opacity; color: var(--ink);
+}
+.slot.center { color: var(--ink); }
+.is-won .slot.center { color: var(--white); }
+.slot-text { transition: filter .9s cubic-bezier(.2,.7,.2,1), opacity .9s; }
+.is-idle .slot-text { filter: blur(10px); opacity: .7; }
+.slot-text { font-family: var(--font-en); unicode-bidi: plaintext; max-width: 30em; text-wrap: balance; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden; }
+
+/* Result line */
+.result { position: relative; z-index: 2; min-height: 28px; font-size: 18px; line-height: 1.1; letter-spacing: -0.02em; color: var(--ink-medium); }
+.result .w { display: inline-block; animation: textIn 900ms cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i) * 75ms); }
+.result .hl { color: var(--orange-dark); }
+.result.out { animation: textOut 900ms linear both; }
+@keyframes textIn { from { opacity: 0; filter: blur(20px); transform: translateY(10px); } to { opacity: 1; filter: blur(0); transform: none; } }
+@keyframes textOut { to { opacity: 0; filter: blur(20px); } }
+
+/* Main button */
+.go {
+  position: relative; z-index: 2; min-width: 200px; height: 64px; border-radius: 999px; border: 0; white-space: nowrap; cursor: pointer;
+  background: var(--orange); color: var(--white); font-size: 24px; line-height: 1.1; letter-spacing: 0; padding: 0 40px;
+  box-shadow: 0 14px 32px -12px rgba(250,100,40,.6);
+  transition: transform .18s cubic-bezier(.2,.7,.2,1), background .2s, box-shadow .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.go::after { content: ""; position: absolute; inset: -8px; border-radius: 999px; border: 1px solid var(--orange-soft); transition: inset .3s, opacity .3s; }
+.go:not(:disabled):not(.spinning):hover::after { inset: -12px; border-color: var(--orange-medium); }
+.go:active { transform: scale(.96); }
+.go[aria-disabled="true"] { cursor: default; }
+.go.spinning { background: var(--ink); box-shadow: 0 14px 32px -12px rgba(25,24,30,.5); }
+.go.spinning::after { border-color: var(--stone); animation: ring 1.2s linear infinite; }
+.go:disabled { cursor: default; background: var(--stone-light); color: var(--ink-medium); box-shadow: none; font-size: 18px; letter-spacing: -0.02em; }
+.go:disabled::after { opacity: 0; }
+@keyframes ring { 0% { inset: -6px; opacity: 1; } 100% { inset: -16px; opacity: 0; } }
+.go:focus-visible, .chip:focus-visible, .btn:focus-visible, textarea:focus-visible, input:focus-visible + .switch { outline: 2px solid var(--ink); outline-offset: 4px; }
+.hint { font-size: 12px; line-height: 1.2; letter-spacing: .01em; color: var(--ink-light); }
+kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1px solid var(--stone-light); border-radius: 6px; }
+
+/* Footer */
+.foot { display: flex; justify-content: space-between; gap: 16px; font-size: 12px; line-height: 1.2; letter-spacing: 0.01em; color: var(--ink-light); flex-wrap: wrap; }
+.history { display: flex; gap: 8px; flex-wrap: wrap; min-width: 0; }
+.history span { unicode-bidi: plaintext; font-family: var(--font-en); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 10px; border-radius: 12px; background: var(--orange-light); color: var(--ink-medium); }
+
+/* Settings sheet */
+.sheet-back { position: fixed; inset: 0; background: rgba(25,24,30,.24); z-index: 20; opacity: 0; transition: opacity .25s; }
+.sheet-back.open { opacity: 1; }
+.sheet {
+  position: fixed; z-index: 21; top: 0; bottom: 0; inset-inline-end: 0; width: min(420px, 100%);
+  background: var(--white); display: flex; flex-direction: column; gap: 20px;
+  padding: calc(28px + env(safe-area-inset-top, 0px)) 28px calc(28px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 0 64px rgba(25,24,30,.16); transform: translateX(100%); transition: transform .3s cubic-bezier(.2,.7,.2,1);
+}
+:root[dir="rtl"] .sheet { transform: translateX(-100%); }
+.sheet.open { transform: none !important; }
+.sheet h2 { margin: 0; font-size: 24px; line-height: 1.1; letter-spacing: 0; }
+.sheet label.field { display: flex; flex-direction: column; gap: 8px; font-size: 16px; line-height: 1.2; color: var(--ink-medium); flex: 1; min-height: 0; }
+.sheet textarea {
+  flex: 1; min-height: 200px; resize: none; border: 1px solid var(--stone-light); border-radius: 16px; padding: 16px;
+  font-size: 16px; line-height: 1.2; background: var(--white); color: var(--ink);
+}
+.sheet .note { font-size: 12px; color: var(--ink-light); line-height: 1.2; letter-spacing: 0.01em; }
+.sheet textarea { padding-block: 14px; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 16px; line-height: 1.2; color: var(--ink-medium); cursor: pointer; }
+.row input { position: absolute; opacity: 0; pointer-events: none; }
+.switch { width: 44px; height: 26px; border-radius: 13px; background: var(--stone-light); box-shadow: inset 0 0 0 1px var(--ink-light); position: relative; flex: none; transition: background .2s; }
+.switch::after { content: ""; position: absolute; top: 3px; inset-inline-start: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--white); box-shadow: 0 1px 3px rgba(25,24,30,.2); transition: transform .2s; }
+.row input:checked + .switch { background: var(--orange); box-shadow: none; }
+.row input:checked + .switch::after { transform: translateX(18px); }
+:root[dir="rtl"] .row input:checked + .switch::after { transform: translateX(-18px); }
+.actions { display: flex; gap: 10px; }
+.round { display: flex; align-items: center; gap: 16px; padding: 16px; border-radius: 16px; background: var(--orange-light); }
+.round-text { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; font-size: 16px; line-height: 1.2; color: var(--ink); }
+.round .note { font-size: 12px; line-height: 1.2; letter-spacing: 0.01em; color: var(--ink-medium); }
+.btn.small { flex: none; height: 44px; padding: 0 18px; }
+.btn { flex: 1; height: 48px; border-radius: 24px; border: 1px solid var(--stone-light); background: var(--white); cursor: pointer; font-size: 16px; line-height: 1.2; letter-spacing: 0; color: var(--ink); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: var(--white); }
+
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (max-width: 560px) {
+  :root { --row: 136px; }
+  .is-won .reel::before { background: var(--orange-dark); border-color: var(--orange-dark); }
+  .headline { font-size: 32px; }
+  .reel::before { left: 8px; right: 8px; }
+  .slot { padding: 0 36px; font-size: 18px; letter-spacing: -0.02em; }
+  .go { height: 56px; min-width: 180px; padding: 0 32px; }
+  .logo { height: 28px; }
+  .hint { display: none; }
+}
+@media (max-width: 420px) {
+  .chip { padding: 0 12px; }
+  .tools { gap: 6px; }
+  #editBtn [data-t="edit"] { display: none; }
+}
+@media (max-height: 860px) and (min-width: 561px) { :root { --row: 124px; } }
+@media (max-height: 700px) { :root { --row: 128px; --rows: 2.2; } .go { height: 52px; } .stage { padding-block: 12px; gap: 16px; } }
+@media (max-width: 380px) { .slot { padding: 0 32px; font-size: 16px; line-height: 1.2; letter-spacing: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .glow i, .go.spinning::after { animation: none; }
+  .result .w, .result.out { animation-duration: 1ms; animation-delay: 0ms; }
+}
+</style>
+</head>
+<body>
+<div class="page" id="app">
+  <header class="top">
+    <div class="wordmark"><svg class="logo logo-en" xmlns="http://www.w3.org/2000/svg" viewBox="39.34 79.90 516.52 109.72" role="img" aria-label="Bank al Etihad" fill="currentColor">
+<path fill-rule="nonzero" d="M 110.22 99.64 C 105.99 100.15 102.44 98.71 99.14 94.64 C 94.66 89.12 87.63 87.76 82.39 92.43 C 82.98 89.55 84.08 86.92 86.62 84.20 C 91.35 79.03 99.39 78.86 103.71 84.71 L 107.77 90.31 C 110.22 93.62 113.60 95.99 117.41 97.10 C 115.72 98.20 113.26 99.30 110.22 99.64 "/>
+<path fill-rule="nonzero" d="M 89.24 93.87 C 86.02 93.79 83.06 96.08 81.80 99.55 C 80.69 102.52 80.53 105.66 80.53 106.76 C 83.40 102.01 88.99 102.01 93.05 105.24 C 95.16 106.93 97.95 108.29 100.91 107.87 C 103.96 107.36 106.07 105.24 107.77 103.37 C 102.44 103.20 99.22 101.08 96.17 97.69 C 94.23 95.57 92.28 93.96 89.24 93.87 "/>
+<path fill-rule="nonzero" d="M 96.94 116.26 C 95.33 117.19 93.05 117.19 90.17 116.01 C 87.46 114.91 84.58 115.67 82.98 118.05 C 82.22 116.26 81.80 113.80 82.39 111.51 C 83.15 108.80 85.60 107.70 87.12 107.53 C 89.28 107.30 90.81 108.31 92.44 109.40 C 94.51 110.78 96.77 112.27 100.75 111.51 C 99.90 113.55 98.63 115.33 96.94 116.26 "/>
+<path fill-rule="nonzero" d="M 75.96 127.71 C 78.66 126.19 80.10 124.49 80.35 122.54 C 80.69 120.59 80.10 118.47 79.00 116.60 C 77.10 120.22 74.54 121.06 72.18 121.83 C 70.33 122.44 68.60 123.00 67.41 124.83 C 66.57 126.10 65.89 128.73 67.58 131.02 C 68.93 132.89 71.22 134.16 73 134.67 C 72.15 131.87 73.42 129.16 75.96 127.71 "/>
+<path fill-rule="nonzero" d="M 58.10 114.65 C 56.08 117.11 55.99 120.84 57.85 124.07 C 59.46 126.78 61.83 128.90 62.67 129.58 C 60.73 124.41 64.28 120 69.27 118.81 C 71.90 118.21 74.77 116.85 76.21 114.23 C 77.73 111.51 77.39 108.55 76.97 106.08 C 73.50 110.16 69.87 111.34 65.30 111.60 C 62.59 111.77 60.05 112.36 58.10 114.65 "/>
+<path fill-rule="nonzero" d="M 64.79 107.36 C 70.03 107.27 73.33 105.41 75.62 101.76 C 77.23 99.13 77.90 96.50 78.07 94.46 C 74.86 96.76 70.88 97.94 66.82 97.77 L 59.97 97.52 C 52.78 97.26 47.87 103.71 48.97 110.66 C 49.56 114.31 50.91 116.86 52.78 119.06 C 52.35 112.11 57.77 107.44 64.79 107.36 "/>
+<path fill-rule="nonzero" d="M 76.21 146.20 C 76.72 143.15 76.21 140.94 74.94 139.50 C 73.59 138.06 71.64 137.21 69.53 136.87 C 71.14 140.58 70.20 143.11 69.33 145.46 C 68.65 147.30 68.01 149.03 68.68 151.12 C 69.19 152.56 70.80 154.77 73.67 154.85 C 75.96 154.94 78.33 153.92 79.93 152.82 C 77.14 151.71 75.70 149.08 76.21 146.20 "/>
+<path fill-rule="nonzero" d="M 54.89 152.05 C 55.57 155.28 58.44 157.57 62.08 158.07 C 65.21 158.50 68.26 157.99 69.44 157.74 C 64.20 156.04 62.93 150.53 65.13 145.86 C 66.31 143.40 67.07 140.35 65.89 137.55 C 64.71 134.67 62.17 133.14 60.05 131.87 C 61.07 137.13 59.71 140.69 57.09 144.42 C 55.48 146.71 54.30 149.08 54.89 152.05 "/>
+<path fill-rule="nonzero" d="M 53.37 142.21 C 56.58 138.06 57.26 134.33 55.74 130.26 C 54.72 127.37 53.12 125.25 51.59 123.81 C 51.34 127.80 49.82 131.61 47.19 134.67 L 42.71 139.84 C 37.97 145.35 40.00 153.16 46.01 156.72 C 49.22 158.58 52.01 159.09 54.89 159.01 C 49.31 154.94 49.05 147.81 53.37 142.21 "/>
+<path fill-rule="nonzero" d="M 90.76 157.48 C 88.65 155.11 86.70 154.17 84.76 154.26 C 82.81 154.43 80.86 155.44 79.34 156.89 C 83.28 157.93 84.66 160.26 85.93 162.39 C 86.94 164.07 87.87 165.64 89.92 166.39 C 91.35 166.90 94.06 166.98 95.92 164.78 C 97.44 163 98.12 160.53 98.29 158.67 C 95.67 160.28 92.71 159.69 90.76 157.48 "/>
+<path fill-rule="nonzero" d="M 82.05 177.83 C 84.92 179.28 88.56 178.51 91.27 175.97 C 93.55 173.76 95.08 171.05 95.58 170.03 C 91.01 173.08 85.85 170.63 83.66 165.96 C 82.47 163.50 80.61 161.04 77.65 160.19 C 74.69 159.35 71.90 160.28 69.53 161.21 C 74.26 163.67 76.21 166.98 77.48 171.39 C 78.24 174.10 79.34 176.48 82.05 177.83 "/>
+<path fill-rule="nonzero" d="M 73.50 172.92 C 72.32 167.83 69.70 164.94 65.64 163.59 C 62.76 162.57 60.05 162.57 58.02 162.82 C 60.98 165.45 63.01 169.10 63.77 173.08 L 65.04 179.87 C 66.40 187 73.67 190.30 80.19 187.76 C 83.57 186.40 85.77 184.53 87.55 182.16 C 80.78 184.03 75.11 179.70 73.50 172.92 "/>
+<path fill-rule="nonzero" d="M 108.70 153.16 C 105.57 153.33 103.54 154.26 102.44 155.87 C 101.33 157.48 100.91 159.60 101.08 161.81 C 104.34 159.39 107.02 159.75 109.49 160.08 C 111.44 160.35 113.26 160.59 115.13 159.43 C 116.40 158.67 118.17 156.55 117.66 153.75 C 117.24 151.46 115.72 149.34 114.37 148.07 C 113.86 151.03 111.57 152.99 108.70 153.16 "/>
+<path fill-rule="nonzero" d="M 119.10 172.66 C 122.07 171.30 123.67 168.00 123.33 164.26 C 123.08 161.13 121.89 158.25 121.39 157.14 C 120.88 162.66 115.80 165.12 110.81 164.01 C 108.19 163.42 105.06 163.33 102.60 165.12 C 100.07 166.89 99.14 169.69 98.37 172.16 C 103.28 170.03 107.00 170.54 111.24 172.24 C 113.86 173.26 116.31 173.94 119.10 172.66 "/>
+<path fill-rule="nonzero" d="M 109.88 176.31 C 105.14 174.10 101.34 174.28 97.70 176.65 C 95.16 178.26 93.39 180.38 92.37 182.08 C 96.26 181.40 100.32 182.08 103.96 183.94 L 110.05 187.17 C 116.48 190.56 123.58 186.91 125.62 180.21 C 126.72 176.73 126.55 173.76 125.87 170.97 C 123.16 177.50 116.23 179.28 109.88 176.31 "/>
+<path fill-rule="nonzero" d="M 116.40 136.36 C 114.53 138.91 114.11 141.11 114.62 142.89 C 115.21 144.76 116.65 146.46 118.42 147.64 C 118.57 143.60 120.52 141.72 122.33 139.98 C 123.74 138.61 125.07 137.33 125.36 135.17 C 125.53 133.65 125.03 131.02 122.49 129.66 C 120.46 128.64 117.92 128.48 115.97 128.82 C 118.00 131.02 118.09 133.99 116.40 136.36 "/>
+<path fill-rule="nonzero" d="M 138.14 140.35 C 138.90 137.21 137.29 133.82 134.25 131.78 C 131.62 130.00 128.58 129.16 127.48 128.90 C 131.46 132.72 130.19 138.23 126.21 141.45 C 124.09 143.15 122.15 145.52 121.89 148.58 C 121.73 151.63 123.25 154.17 124.69 156.21 C 126.04 151.03 128.83 148.41 132.81 146.20 C 135.35 144.93 137.46 143.32 138.14 140.35 "/>
+<path fill-rule="nonzero" d="M 135.26 149.85 C 130.61 152.14 128.32 155.28 127.90 159.60 C 127.56 162.66 128.07 165.28 128.83 167.23 C 130.78 163.76 133.82 160.96 137.55 159.35 L 143.89 156.63 C 150.57 153.75 152.10 145.86 148.21 140.01 C 146.17 136.96 143.81 135.26 141.18 134.07 C 144.48 140.18 141.52 146.71 135.26 149.85 "/>
+<path fill-rule="nonzero" d="M 108.19 119.82 C 109.03 122.88 110.48 124.57 112.25 125.34 C 114.11 126.10 116.23 125.93 118.34 125.34 C 115.26 122.68 115.02 120.00 114.80 117.53 C 114.62 115.58 114.46 113.76 112.93 112.19 C 111.91 111.09 109.46 109.82 106.83 111.00 C 104.72 111.94 103.03 113.89 102.10 115.50 C 104.98 115.25 107.43 117.03 108.19 119.82 "/>
+<path fill-rule="nonzero" d="M 124.85 105.32 C 122.91 102.78 119.27 101.93 115.72 103.03 C 112.76 103.96 110.14 105.83 109.29 106.51 C 114.79 105.83 118.26 110.24 118.26 115.33 C 118.26 118.04 118.93 121.10 121.13 123.13 C 123.42 125.17 126.38 125.51 128.92 125.68 C 125.78 121.35 125.45 117.53 126.12 113.04 C 126.63 110.33 126.72 107.69 124.85 105.32 "/>
+<path fill-rule="nonzero" d="M 130.44 113.55 C 129.34 118.64 130.44 122.37 133.48 125.42 C 135.68 127.54 138.05 128.82 140.00 129.5 C 138.48 125.85 138.22 121.69 139.24 117.79 L 141.01 111.09 C 142.96 104.05 137.71 97.94 130.78 97.35 C 127.14 97.10 124.35 97.86 121.73 99.13 C 128.66 100.23 131.96 106.59 130.44 113.55 "/>
+<path fill-rule="nonzero" d="M 302.43 127.39 L 289.91 140.96 L 289.91 110.94 L 283.91 110.94 L 283.91 157.84 L 289.91 157.84 L 289.91 144.35 L 302.43 157.84 L 310.05 157.84 L 296.17 142.66 L 310.05 127.39 Z M 302.43 127.39 "/>
+<path fill-rule="evenodd" d="M 203.79 134.18 C 207.26 133.25 211.15 130.11 211.15 124.00 C 211.15 121.80 210.47 110.94 196.85 110.94 L 180.86 110.94 L 180.86 157.84 L 197.19 157.84 C 207.76 157.84 211.49 150.72 211.49 144.61 C 211.49 138.08 206.83 135.03 203.79 134.18 M 187.12 116.62 L 196.85 116.62 C 202.77 116.62 204.89 120.61 204.89 124.00 C 204.89 124.76 204.64 131.30 197.02 131.30 L 187.12 131.30 Z M 197.19 152.16 L 187.12 152.16 L 187.12 137.06 L 197.36 137.06 C 203.62 137.06 205.23 142.07 205.23 144.69 C 205.23 147.5 203.53 152.16 197.19 152.16 "/>
+<path fill-rule="evenodd" d="M 240.25 132.23 C 238.14 128.67 234.16 126.55 229.51 126.55 C 225.28 126.55 221.39 128.24 218.51 131.30 C 215.72 134.35 214.11 138.33 214.11 142.57 C 214.11 151.57 220.79 158.60 229.42 158.60 C 234.07 158.60 238.14 156.48 240.25 152.92 L 240.25 157.84 L 246.17 157.84 L 246.17 127.31 L 240.25 127.31 Z M 230.18 153.17 C 224.35 153.17 220.12 148.76 220.12 142.66 C 220.12 139.78 221.05 137.15 222.82 135.19 C 224.68 133.16 227.22 132.06 230.18 132.06 C 233.06 132.06 235.68 133.16 237.54 135.19 C 239.32 137.15 240.25 139.78 240.25 142.66 C 240.25 148.76 236.02 153.17 230.18 153.17 "/>
+<path fill-rule="nonzero" d="M 268.00 126.55 C 263.18 126.55 259.46 128.58 257.42 132.31 L 257.42 127.31 L 251.42 127.31 L 251.42 157.84 L 257.42 157.84 L 257.42 142.15 C 257.42 134.60 262 131.89 265.97 131.89 C 269.35 131.89 273.41 133.58 273.41 141.64 L 273.41 157.84 L 279.42 157.84 L 279.42 139.86 C 279.42 135.62 278.75 132.82 277.05 130.62 C 275.10 127.99 271.98 126.55 268.00 126.55 "/>
+<path fill-rule="evenodd" d="M 347.86 132.23 C 345.75 128.67 341.77 126.55 337.12 126.55 C 332.89 126.55 329 128.24 326.12 131.30 C 323.33 134.35 321.72 138.33 321.72 142.57 C 321.72 151.57 328.41 158.60 337.03 158.60 C 341.69 158.60 345.75 156.48 347.86 152.92 L 347.86 157.84 L 353.78 157.84 L 353.78 127.31 L 347.86 127.31 Z M 337.80 153.17 C 331.96 153.17 327.73 148.76 327.73 142.66 C 327.73 139.78 328.66 137.15 330.44 135.19 C 332.30 133.16 334.83 132.06 337.80 132.06 C 340.67 132.06 343.30 133.16 345.16 135.19 C 346.93 137.15 347.86 139.78 347.86 142.66 C 347.86 148.76 343.63 153.17 337.80 153.17 "/>
+<path fill-rule="nonzero" d="M 364.95 110.94 L 358.94 110.94 L 358.94 157.84 L 364.95 157.84 Z M 364.95 110.94 "/>
+<path fill-rule="nonzero" d="M 385.51 157.84 L 411.91 157.84 L 411.91 152.16 L 391.85 152.16 L 391.85 137.40 L 411.91 137.40 L 411.91 131.72 L 391.85 131.72 L 391.85 116.62 L 411.91 116.62 L 411.91 110.94 L 385.51 110.94 Z M 385.51 157.84 "/>
+<path fill-rule="nonzero" d="M 432.04 152.75 C 429.33 152.75 427.13 152.24 427.13 146.31 L 427.13 132.48 L 435.00 132.48 L 435.00 127.39 L 427.13 127.39 L 427.13 117.21 L 421.13 117.21 L 421.13 127.39 L 415.54 127.39 L 415.54 132.48 L 421.13 132.48 L 421.13 147.58 C 421.13 151.99 422.31 155.04 424.51 156.74 C 426.46 158.18 428.82 158.35 430.69 158.35 C 432.72 158.35 434.83 158.18 435.93 157.92 L 436.01 157.92 L 436.01 152.58 L 435.85 152.58 C 435.08 152.67 433.23 152.75 432.04 152.75 "/>
+<path fill-rule="nonzero" d="M 444.22 111.70 C 441.85 111.70 439.99 113.66 439.99 116.03 C 439.99 118.32 441.94 120.18 444.22 120.18 C 446.59 120.18 448.45 118.32 448.45 116.03 C 448.45 113.66 446.59 111.70 444.22 111.70 "/>
+<path fill-rule="nonzero" d="M 447.18 127.39 L 441.26 127.39 L 441.26 157.92 L 447.18 157.92 Z M 447.18 127.39 "/>
+<path fill-rule="nonzero" d="M 471.30 126.55 C 466.47 126.55 462.75 128.58 460.72 132.31 L 460.72 110.94 L 454.71 110.94 L 454.71 157.84 L 460.72 157.84 L 460.72 142.15 C 460.72 134.60 465.29 131.89 469.26 131.89 C 472.65 131.89 476.71 133.58 476.71 141.64 L 476.71 157.84 L 482.71 157.84 L 482.71 139.86 C 482.71 135.62 482.04 132.82 480.35 130.62 C 478.40 127.99 475.27 126.55 471.30 126.55 "/>
+<path fill-rule="evenodd" d="M 512.33 132.23 C 510.21 128.67 506.23 126.55 501.58 126.55 C 497.35 126.55 493.46 128.24 490.58 131.30 C 487.79 134.35 486.18 138.33 486.18 142.57 C 486.18 151.57 492.87 158.60 501.5 158.60 C 506.15 158.60 510.21 156.48 512.33 152.92 L 512.33 157.84 L 518.25 157.84 L 518.25 127.31 L 512.33 127.31 Z M 502.26 153.17 C 496.42 153.17 492.19 148.76 492.19 142.66 C 492.19 139.78 493.12 137.15 494.90 135.19 C 496.76 133.16 499.30 132.06 502.26 132.06 C 505.14 132.06 507.76 133.16 509.62 135.19 C 511.39 137.15 512.33 139.78 512.33 142.66 C 512.33 148.76 508.10 153.17 502.26 153.17 "/>
+<path fill-rule="evenodd" d="M 548.53 132.23 C 546.42 128.67 542.44 126.55 537.79 126.55 C 533.56 126.55 529.67 128.24 526.79 131.30 C 524.00 134.35 522.39 138.33 522.39 142.57 C 522.39 151.57 529.08 158.60 537.71 158.60 C 542.36 158.60 546.42 156.48 548.53 152.92 L 548.53 157.84 L 554.46 157.84 L 554.46 110.94 L 548.53 110.94 Z M 538.47 153.17 C 532.63 153.17 528.40 148.76 528.40 142.66 C 528.40 139.78 529.33 137.15 531.11 135.19 C 532.97 133.16 535.51 132.06 538.47 132.06 C 541.43 132.06 543.97 133.16 545.83 135.19 C 547.60 137.15 548.53 139.78 548.53 142.66 C 548.53 148.76 544.30 153.17 538.47 153.17 "/>
+</svg><svg class="logo logo-ar" xmlns="http://www.w3.org/2000/svg" viewBox="47.50 54.94 499.72 137.56" role="img" aria-label="Bank al Etihad" fill="currentColor">
+<path fill-rule="nonzero" d="M 322.53 151.32 L 311.47 163.30 L 311.47 136.91 L 306.14 136.91 L 306.14 178.12 L 311.47 178.12 L 311.47 166.23 L 322.50 178.12 L 329.27 178.12 L 316.99 164.73 L 329.30 151.32 Z M 322.53 151.32 "/>
+<path fill-rule="nonzero" d="M 229.33 173.10 L 220.42 173.10 L 220.42 159.85 L 229.45 159.85 C 234.96 159.85 236.41 164.22 236.41 166.53 C 236.41 168.98 234.92 173.10 229.33 173.10 M 220.42 141.92 L 229.04 141.92 C 234.26 141.92 236.12 145.40 236.12 148.38 C 236.12 149.03 235.92 154.78 229.16 154.78 L 220.42 154.78 L 220.42 141.92 Z M 235.19 157.34 C 238.28 156.51 241.69 153.73 241.69 148.38 C 241.69 146.47 241.08 136.92 229.03 136.92 L 214.83 136.92 L 214.83 178.12 L 229.32 178.12 C 238.67 178.12 241.98 171.86 241.98 166.48 C 241.98 160.73 237.90 158.10 235.19 157.35 "/>
+<path fill-rule="nonzero" d="M 258.56 173.98 C 253.40 173.98 249.66 170.08 249.66 164.71 C 249.66 162.21 250.51 159.87 252.08 158.16 C 253.71 156.37 256.01 155.39 258.56 155.39 C 261.11 155.39 263.42 156.37 265.05 158.16 C 266.62 159.87 267.47 162.20 267.47 164.71 C 267.47 170.08 263.73 173.98 258.56 173.98 M 267.47 155.59 C 265.60 152.46 262.08 150.61 257.97 150.61 C 254.23 150.61 250.77 152.11 248.23 154.81 C 245.74 157.46 244.37 160.97 244.37 164.71 C 244.37 172.59 250.32 178.76 257.91 178.76 C 262.06 178.76 265.60 176.91 267.47 173.78 L 267.47 178.11 L 272.75 178.11 L 272.75 151.31 L 267.47 151.31 Z M 267.47 155.59 "/>
+<path fill-rule="nonzero" d="M 292.04 150.61 C 287.75 150.61 284.44 152.41 282.65 155.68 L 282.65 151.32 L 277.31 151.32 L 277.31 178.12 L 282.65 178.12 L 282.65 164.31 C 282.65 157.69 286.73 155.33 290.21 155.33 C 293.23 155.33 296.82 156.82 296.82 163.90 L 296.82 178.12 L 302.16 178.12 L 302.16 162.32 C 302.16 158.58 301.54 156.15 300.08 154.17 C 298.33 151.84 295.55 150.61 292.04 150.61 "/>
+<path fill-rule="nonzero" d="M 353.85 173.98 C 348.69 173.98 344.94 170.08 344.94 164.71 C 344.94 162.21 345.80 159.87 347.37 158.16 C 349.00 156.37 351.30 155.39 353.85 155.39 C 356.41 155.39 358.71 156.37 360.34 158.16 C 361.91 159.87 362.76 162.20 362.76 164.71 C 362.76 170.08 359.01 173.98 353.85 173.98 M 362.76 155.59 C 360.90 152.46 357.38 150.61 353.26 150.61 C 349.52 150.61 346.06 152.11 343.52 154.81 C 341.03 157.46 339.66 160.97 339.66 164.71 C 339.66 172.59 345.61 178.76 353.21 178.76 C 357.35 178.76 360.90 176.91 362.76 173.78 L 362.76 178.11 L 368.04 178.11 L 368.04 151.31 L 362.76 151.31 Z M 362.76 155.59 "/>
+<path fill-rule="nonzero" d="M 377.88 136.91 L 372.55 136.91 L 372.55 178.12 L 377.88 178.12 Z M 377.88 136.91 "/>
+<path fill-rule="nonzero" d="M 396.13 178.12 L 419.51 178.12 L 419.51 173.10 L 401.71 173.10 L 401.71 160.14 L 419.51 160.14 L 419.51 155.13 L 401.71 155.13 L 401.71 141.92 L 419.51 141.92 L 419.51 136.91 L 396.13 136.91 Z M 396.13 178.12 "/>
+<path fill-rule="nonzero" d="M 437.33 173.63 C 434.97 173.63 433.02 173.20 433.02 167.94 L 433.02 155.80 L 439.98 155.80 L 439.98 151.32 L 433.02 151.32 L 433.02 142.35 L 427.69 142.35 L 427.69 151.32 L 422.73 151.32 L 422.73 155.80 L 427.69 155.80 L 427.69 169.05 C 427.69 172.90 428.69 175.59 430.70 177.06 C 432.40 178.30 434.50 178.47 436.16 178.47 C 437.98 178.47 439.87 178.28 440.83 178.12 L 440.92 178.10 L 440.92 173.39 L 440.80 173.40 C 440.01 173.53 438.35 173.64 437.34 173.64 "/>
+<path fill-rule="nonzero" d="M 448.12 137.61 C 446.05 137.61 444.36 139.31 444.36 141.40 C 444.36 143.49 446.05 145.08 448.12 145.08 C 450.19 145.08 451.88 143.44 451.88 141.40 C 451.88 139.37 450.19 137.61 448.12 137.61 "/>
+<path fill-rule="nonzero" d="M 450.76 151.32 L 445.48 151.32 L 445.48 178.12 L 450.76 178.12 Z M 450.76 151.32 "/>
+<path fill-rule="nonzero" d="M 472.11 150.62 C 467.83 150.62 464.51 152.41 462.73 155.68 L 462.73 136.91 L 457.39 136.91 L 457.39 178.12 L 462.73 178.12 L 462.73 164.31 C 462.73 157.69 466.80 155.33 470.28 155.33 C 473.30 155.33 476.89 156.82 476.89 163.90 L 476.89 178.12 L 482.24 178.12 L 482.24 162.32 C 482.24 158.58 481.61 156.15 480.16 154.17 C 478.40 151.84 475.62 150.62 472.12 150.62 "/>
+<path fill-rule="nonzero" d="M 499.51 173.98 C 494.35 173.98 490.60 170.08 490.60 164.71 C 490.60 162.20 491.46 159.87 493.03 158.16 C 494.66 156.37 496.96 155.39 499.51 155.39 C 502.07 155.39 504.37 156.37 506.00 158.16 C 507.57 159.87 508.42 162.20 508.42 164.71 C 508.42 170.08 504.67 173.98 499.51 173.98 M 508.42 155.59 C 506.56 152.46 503.04 150.61 498.92 150.61 C 495.18 150.61 491.72 152.11 489.17 154.81 C 486.69 157.46 485.32 160.97 485.32 164.71 C 485.32 172.59 491.26 178.76 498.86 178.76 C 503.01 178.76 506.55 176.91 508.42 173.78 L 508.42 178.11 L 513.70 178.11 L 513.70 151.31 L 508.42 151.31 Z M 508.42 155.59 "/>
+<path fill-rule="nonzero" d="M 531.57 173.98 C 526.41 173.98 522.66 170.08 522.66 164.71 C 522.66 162.20 523.52 159.87 525.08 158.16 C 526.72 156.37 529.02 155.39 531.57 155.39 C 534.12 155.39 536.43 156.37 538.06 158.16 C 539.62 159.87 540.48 162.20 540.48 164.71 C 540.48 170.08 536.73 173.98 531.57 173.98 M 540.49 155.59 C 538.62 152.46 535.10 150.61 530.98 150.61 C 527.25 150.61 523.79 152.11 521.24 154.81 C 518.75 157.46 517.38 160.97 517.38 164.71 C 517.38 172.59 523.33 178.76 530.93 178.76 C 535.08 178.76 538.62 176.91 540.49 173.78 L 540.49 178.11 L 545.77 178.11 L 545.77 136.90 L 540.49 136.90 Z M 540.49 155.59 "/>
+<path fill-rule="nonzero" d="M 111.66 100.36 C 115.32 101.88 118.15 101.88 120.25 100.69 C 122.41 99.47 124.03 97.24 125.05 94.74 C 116.04 96.44 113.98 89.14 107.75 89.72 C 105.83 89.91 102.69 91.27 101.78 94.78 C 101.04 97.60 101.56 100.78 102.49 103.01 C 104.59 99.92 108.26 98.94 111.66 100.35 "/>
+<path fill-rule="nonzero" d="M 110.47 72.54 C 106.37 72.45 102.67 75.36 101 79.70 C 99.56 83.41 99.37 87.35 99.33 88.79 C 102.95 82.86 110.10 82.82 115.20 86.85 C 117.87 88.95 121.41 90.73 125.21 90.10 C 129.07 89.47 131.74 86.83 133.87 84.48 C 127.14 84.23 123.09 81.57 119.24 77.33 C 116.85 74.71 114.33 72.61 110.48 72.53 "/>
+<path fill-rule="nonzero" d="M 123 73.47 C 127.18 78.57 131.69 80.42 137.10 79.75 C 140.93 79.28 144.05 77.90 146.22 76.51 C 141.40 75.10 137.09 72.17 134.05 68.02 L 128.89 61.01 C 123.48 53.64 113.28 53.91 107.23 60.39 C 104.07 63.78 102.64 67.14 101.90 70.70 C 108.50 64.86 117.37 66.62 123 73.48 "/>
+<path fill-rule="nonzero" d="M 93.62 115.10 C 97.10 113.20 98.87 111.01 99.24 108.63 C 99.62 106.19 98.88 103.54 97.55 101.19 C 93.27 109.26 86.25 106.30 82.82 111.51 C 81.77 113.11 80.88 116.40 83.07 119.30 C 84.83 121.63 87.66 123.21 89.99 123.88 C 88.87 120.32 90.40 116.85 93.63 115.09 "/>
+<path fill-rule="nonzero" d="M 71 98.68 C 68.37 101.82 68.35 106.5 70.72 110.51 C 72.74 113.92 75.72 116.54 76.83 117.46 C 74.42 110.96 78.85 105.38 85.20 103.92 C 88.52 103.16 92.13 101.52 94.00 98.18 C 95.91 94.79 95.5 91.07 94.98 87.95 C 90.60 93.02 85.97 94.51 80.23 94.86 C 76.68 95.08 73.46 95.73 70.99 98.68 "/>
+<path fill-rule="nonzero" d="M 79.53 89.53 C 86.15 89.45 90.41 87.11 93.26 82.49 C 95.29 79.22 96.15 75.93 96.40 73.38 C 92.29 76.25 87.29 77.76 82.13 77.54 L 73.40 77.18 C 64.22 76.80 58.08 84.89 59.41 93.61 C 60.11 98.19 61.85 101.39 64.19 104.19 C 63.71 95.42 70.63 89.63 79.53 89.53 "/>
+<path fill-rule="nonzero" d="M 93.98 138.31 C 94.65 134.42 94.03 131.68 92.39 129.91 C 90.71 128.08 88.16 127.02 85.48 126.58 C 89.16 134.94 82.45 138.55 84.41 144.46 C 85.01 146.28 87.05 149.01 90.70 149.12 C 93.64 149.21 96.64 148.00 98.62 146.60 C 95.12 145.26 93.35 141.91 93.98 138.30 "/>
+<path fill-rule="nonzero" d="M 66.94 145.64 C 67.78 149.64 71.44 152.58 76.08 153.24 C 80.03 153.80 83.94 153.12 85.37 152.82 C 78.74 150.64 77.12 143.72 79.93 137.88 C 81.40 134.83 82.35 131.00 80.90 127.46 C 79.42 123.87 76.24 121.87 73.46 120.32 C 74.71 126.90 73.01 131.42 69.71 136.10 C 67.67 138.99 66.17 141.91 66.95 145.66 "/>
+<path fill-rule="nonzero" d="M 65.07 133.31 C 69.13 128.12 69.95 123.35 68.09 118.25 C 66.78 114.64 64.73 111.92 62.87 110.13 C 62.57 115.12 60.64 119.94 57.26 123.82 L 51.52 130.37 C 45.49 137.26 48.03 147.08 55.73 151.49 C 59.76 153.80 63.37 154.44 67.03 154.36 C 59.83 149.27 59.59 140.28 65.06 133.30 "/>
+<path fill-rule="nonzero" d="M 112.45 152.50 C 109.81 149.55 107.26 148.33 104.85 148.50 C 102.37 148.67 99.95 149.98 97.94 151.80 C 106.80 154.14 105.46 161.61 111.34 163.77 C 113.14 164.44 116.57 164.56 118.92 161.79 C 120.82 159.56 121.74 156.48 121.88 154.07 C 118.63 155.95 114.89 155.24 112.45 152.50 "/>
+<path fill-rule="nonzero" d="M 101.37 178.08 C 105.03 179.92 109.63 178.91 113.04 175.72 C 115.94 173.00 117.85 169.53 118.50 168.24 C 112.65 172.03 106.19 168.98 103.36 163.15 C 101.87 160.10 99.46 156.97 95.77 155.89 C 92.02 154.80 88.46 156.03 85.51 157.22 C 91.46 160.34 93.95 164.49 95.57 169.98 C 96.58 173.36 97.93 176.34 101.37 178.08 "/>
+<path fill-rule="nonzero" d="M 90.5 171.84 C 88.95 165.45 85.70 161.84 80.53 160.10 C 76.87 158.88 73.46 158.77 70.89 159.09 C 74.62 162.44 77.22 166.94 78.16 171.99 L 79.75 180.53 C 81.41 189.51 90.71 193.66 98.99 190.43 C 103.32 188.73 106.07 186.33 108.30 183.44 C 99.80 185.86 92.58 180.44 90.50 171.84 "/>
+<path fill-rule="nonzero" d="M 135.14 147.00 C 131.17 147.21 128.62 148.42 127.25 150.40 C 125.83 152.43 125.36 155.14 125.53 157.83 C 132.91 152.41 137.94 158.10 143.31 154.89 C 144.95 153.90 147.19 151.32 146.48 147.76 C 145.91 144.90 144.05 142.26 142.25 140.65 C 141.71 144.34 138.81 146.80 135.14 147 "/>
+<path fill-rule="nonzero" d="M 148.35 171.55 C 152.09 169.86 154.15 165.65 153.77 161.01 C 153.44 157.06 151.91 153.42 151.30 152.11 C 150.64 159.01 144.21 162.13 137.85 160.70 C 134.53 159.95 130.56 159.88 127.41 162.08 C 124.21 164.31 122.96 167.85 122.05 170.88 C 128.23 168.21 133.04 168.85 138.37 171.01 C 141.66 172.35 144.84 173.15 148.35 171.55 "/>
+<path fill-rule="nonzero" d="M 136.67 176.12 C 130.67 173.33 125.80 173.60 121.22 176.53 C 117.98 178.61 115.76 181.21 114.42 183.39 C 119.38 182.58 124.54 183.37 129.10 185.79 L 136.80 189.88 C 144.90 194.19 153.97 189.55 156.58 181.10 C 157.95 176.68 157.78 173.04 156.89 169.51 C 153.5 177.62 144.73 179.85 136.67 176.11 "/>
+<path fill-rule="nonzero" d="M 144.96 125.94 C 142.65 129.16 142.01 131.89 142.71 134.19 C 143.44 136.56 145.26 138.62 147.49 140.16 C 147.82 131.05 155.44 130.69 156.26 124.51 C 156.51 122.62 155.87 119.27 152.63 117.60 C 150.02 116.26 146.80 116.06 144.40 116.46 C 146.96 119.18 147.10 122.96 144.96 125.94 "/>
+<path fill-rule="nonzero" d="M 172.51 130.98 C 173.51 127.02 171.48 122.80 167.60 120.20 C 164.28 117.99 160.45 116.92 159.05 116.57 C 164.06 121.39 162.51 128.33 157.42 132.38 C 154.76 134.5 152.23 137.53 151.99 141.35 C 151.75 145.22 153.75 148.40 155.58 150.99 C 157.32 144.53 160.83 141.19 165.85 138.40 C 168.95 136.67 171.57 134.69 172.51 130.98 "/>
+<path fill-rule="nonzero" d="M 168.81 142.90 C 162.89 145.82 160.07 149.77 159.51 155.17 C 159.12 158.98 159.78 162.32 160.67 164.73 C 163.12 160.37 166.96 156.85 171.71 154.82 L 179.73 151.39 C 188.17 147.78 190.17 137.84 185.16 130.55 C 182.53 126.73 179.56 124.60 176.24 123.09 C 180.5 130.78 176.79 138.99 168.82 142.92 "/>
+<path fill-rule="nonzero" d="M 134.51 105.19 C 135.60 108.98 137.35 111.18 139.60 112.07 C 141.91 112.98 144.67 112.85 147.27 112.08 C 140.32 106.14 144.78 100 140.43 95.51 C 139.10 94.14 136.06 92.55 132.73 94.03 C 130.05 95.22 127.88 97.60 126.69 99.71 C 130.44 99.41 133.5 101.67 134.51 105.19 "/>
+<path fill-rule="nonzero" d="M 155.66 86.92 C 153.16 83.67 148.57 82.61 144.11 84.02 C 140.30 85.22 137.08 87.52 135.93 88.40 C 142.85 87.51 147.34 93.04 147.35 99.52 C 147.35 102.90 148.17 106.76 151.03 109.32 C 153.92 111.93 157.67 112.35 160.85 112.55 C 156.85 107.17 156.42 102.36 157.35 96.72 C 157.93 93.23 158.01 89.97 155.67 86.92 "/>
+<path fill-rule="nonzero" d="M 162.73 97.22 C 161.33 103.65 162.67 108.30 166.58 112.09 C 169.34 114.77 172.37 116.34 174.82 117.16 C 172.91 112.53 172.55 107.35 173.91 102.41 L 176.21 94.03 C 178.63 85.22 172.06 77.47 163.19 76.82 C 158.55 76.48 155.02 77.46 151.76 79.10 C 160.47 80.58 164.61 88.58 162.73 97.22 "/>
+<path fill-rule="nonzero" d="M 347.73 73.39 C 347.73 75.42 346.05 77.07 343.98 77.07 C 341.90 77.07 340.22 75.42 340.22 73.39 C 340.22 71.35 341.90 69.60 343.98 69.60 C 346.05 69.60 347.73 71.30 347.73 73.39 M 333.89 77.07 C 335.96 77.07 337.65 75.42 337.65 73.39 C 337.65 71.35 335.96 69.60 333.89 69.60 C 331.82 69.60 330.13 71.30 330.13 73.39 C 330.13 75.48 331.81 77.07 333.89 77.07 M 227.64 82.63 L 227.60 82.61 L 224.19 87.07 L 224.23 87.09 C 233.60 92.19 238.22 97.99 238.24 104.94 L 214.84 104.94 L 214.84 110.11 L 243.81 110.11 L 243.81 105.92 C 243.81 102.53 243.50 98.95 241.08 94.52 C 238.56 89.92 234.12 86.07 227.64 82.63 M 337.06 96.97 C 337.06 102.85 335.27 104.93 330.23 104.93 L 312.52 104.93 L 312.53 104.82 C 314.05 94.10 311.01 89.80 308.08 87.00 C 304.80 83.88 300.83 82.61 294.38 82.61 C 292.40 82.61 287.28 83.14 283.82 84.39 L 283.79 84.41 L 285.06 89.57 L 285.10 89.55 C 288.5 88.57 291.25 88.08 293.51 88.05 C 298.26 87.96 301.32 88.41 303.90 90.94 C 307.03 94.03 307.08 99.98 306.07 104.85 L 306.05 104.93 L 261.76 104.93 C 256.60 104.93 254.19 102.97 254.19 98.72 L 254.19 68.90 L 248.90 68.90 L 248.90 99.03 C 248.90 106.55 252.84 110.11 261.54 110.11 L 330.78 110.11 C 338.48 110.11 342.36 105.94 342.36 97.85 L 342.36 83.31 L 337.07 83.31 L 337.07 96.98 Z M 389.36 97.10 C 389.36 102.66 387.20 104.93 381.91 104.93 L 378 104.93 L 378 75.74 L 372.71 75.74 L 372.71 104.93 L 349.44 104.93 L 349.44 110.11 L 382.52 110.11 C 390.23 110.11 394.66 105.91 394.66 98.60 L 394.66 68.90 L 389.36 68.90 Z M 406.03 110.11 L 411.32 110.11 L 411.32 68.90 L 406.03 68.90 Z M 406.03 110.11 "/>
+<path fill-rule="nonzero" d="M 518.85 77.07 C 520.92 77.07 522.60 75.42 522.60 73.39 C 522.60 71.36 520.92 69.60 518.85 69.60 C 516.78 69.60 515.09 71.30 515.09 73.39 C 515.09 75.48 516.78 77.07 518.85 77.07 "/>
+<path fill-rule="nonzero" d="M 471.34 87.16 L 465.64 87.16 L 465.60 87.12 C 464.91 86.27 464.47 85.12 464.47 84.10 C 464.47 81.71 466.48 81.35 467.68 81.35 C 468.66 81.35 469.58 81.58 470.04 81.72 L 470.08 81.73 L 470.66 78.49 L 470.62 78.48 C 469.78 78.24 468.77 77.98 467.49 77.98 C 463.71 77.98 460.96 80.45 460.96 83.85 C 460.96 84.91 461.25 86.02 461.78 86.99 L 461.87 87.16 L 458.85 87.16 L 458.85 90.46 L 471.34 90.46 L 471.34 87.16 Z M 471.34 87.16 "/>
+<path fill-rule="nonzero" d="M 531.28 114.35 C 529.20 114.35 527.51 116.05 527.51 118.14 C 527.51 120.23 529.20 121.82 531.28 121.82 C 533.35 121.82 535.03 120.17 535.03 118.14 C 535.03 116.10 533.35 114.35 531.28 114.35 "/>
+<path fill-rule="nonzero" d="M 540.48 83.31 L 540.48 96.44 C 540.48 102.42 537.43 104.93 530.98 104.93 C 524.44 104.93 521.48 101.90 521.48 96.44 L 521.48 83.31 L 516.19 83.31 L 516.19 96.44 C 516.19 102.42 513.15 104.93 506.69 104.93 C 500.19 104.93 497.23 101.93 497.19 96.54 L 497.19 68.90 L 491.89 68.90 L 491.89 96.97 C 491.89 102.84 490.86 104.93 485.07 104.93 L 444.95 104.93 C 439.10 104.93 435.32 101.39 435.32 95.90 C 435.32 93.87 435.79 90.98 436.69 87.55 L 436.70 87.51 L 431.70 86.18 L 431.69 86.21 C 430.86 88.47 429.69 93.27 429.69 96.88 C 429.69 104.66 435.63 110.10 444.14 110.10 L 485.07 110.10 C 490.22 110.10 493.63 108.76 495.58 106.23 C 497.41 108.45 501.00 110.10 506.69 110.10 L 506.70 110.10 C 512.91 110.10 516.99 108.47 519.26 105.42 L 519.58 105.86 C 521.30 108.27 524.98 110.10 530.98 110.10 L 530.99 110.10 C 541.31 110.10 545.78 105.64 545.78 97.51 L 545.78 83.30 L 540.49 83.30 Z M 540.48 83.31 "/>
+</svg></div>
+    <div class="tools">
+      <button class="chip" id="langBtn" type="button" aria-label="Switch language">EN</button>
+      <button class="chip" id="soundBtn" type="button" aria-pressed="true" data-t-label="sound" aria-label="الصوت">
+        <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h3l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg>
+        <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h3l5-4v14l-5-4H4z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>
+      </button>
+      <button class="chip" id="editBtn" type="button" aria-haspopup="dialog" data-t-label="edit" aria-label="الهدايا">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+        <span data-t="edit">Challenges</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="stage is-idle" id="stage">
+    <div class="intro">
+      <h1 class="headline" data-t="headline">Press and get your challenge</h1>
+    </div>
+
+    <div class="reel-wrap">
+      <div class="glow" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="reel" id="reel" aria-hidden="true"></div>
+    </div>
+
+    <div class="result" id="result" aria-live="polite"></div>
+
+    <button class="go" id="go" type="button" data-t="start">ابدأ</button>
+    <div class="hint" data-t-html="hint">أو اضغط <kbd>Space</kbd></div>
+  </main>
+
+  <footer class="foot">
+    <div class="history" id="history" role="list" data-t-label="recent" aria-label="آخر النتائج"></div>
+  </footer>
+</div>
+
+<div class="sheet-back" id="back" hidden></div>
+<aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <h2 id="sheetTitle" data-t="sheetTitle">قائمة الهدايا</h2>
+  <label class="field" for="giftsInput">
+    <span data-t="sheetLabel">اكتب كل هدية بسطر لحالها</span>
+    <textarea id="giftsInput" spellcheck="false"></textarea>
+    <span class="note" data-t="sheetNote">الأسماء الموجودة هي أمثلة. التعديلات بتنحفظ على هذا الجهاز فقط.</span>
+  </label>
+  <div class="round">
+    <div class="round-text">
+      <span id="roundStatus"></span>
+      <span class="note" data-t="roundNote">Each challenge comes up once per round. When all have been drawn, a new round starts by itself.</span>
+    </div>
+    <button class="btn small" id="newRoundBtn" type="button" data-t="newRound">New round</button>
+  </div>
+  <div class="actions">
+    <button class="btn" id="resetBtn" type="button" data-t="reset">رجّع الأمثلة</button>
+    <button class="btn primary" id="saveBtn" type="button" data-t="save">حفظ</button>
+  </div>
+</aside>
+
+<script>
+(() => {
+  const STR = {
+    ar: {
+      brand: "بنك الاتحاد", eyebrow: "تحدّي سوق الميلاد", headline: "اكبس واكتشف تحدّيك",
+      start: "ابدأ", stop: "وقّف", again: "لفّة جديدة", empty: "خلصت التحديات",
+      hint: 'أو اضغط <kbd>Space</kbd>', edit: "التحديات", sound: "الصوت",
+      won: "هذا تحدّيك. بالتوفيق!", recent: "آخر التحديات", spinning: "التحديات عم تلف… اكبس وقّف",
+      count: (n) => `${n.toLocaleString("ar-EG")} ${n === 1 ? "تحدّي" : n <= 10 ? "تحديات" : "تحدّي"} بالسحب`,
+      sheetTitle: "قائمة التحديات", sheetLabel: "اكتب كل تحدّي بسطر لحاله",
+      sheetNote: "التعديلات بتنحفظ على هذا الجهاز فقط.",
+      round: (d, n) => `طلع ${d.toLocaleString("ar-EG")} من ${n.toLocaleString("ar-EG")} بهاي الجولة`,
+      roundNote: "كل تحدّي بيطلع مرة وحدة بالجولة. لما يطلعوا كلهم بتبلّش جولة جديدة لحالها.", newRound: "جولة جديدة", reset: "رجّع القائمة الأصلية", save: "حفظ",
+      emptyList: "ضيف تحدّي واحد على الأقل", lang: "EN"
+    },
+    en: {
+      brand: "Bank al Etihad", eyebrow: "Christmas market challenge", headline: "Press and get your challenge",
+      start: "Start", stop: "Stop", again: "Spin again", empty: "No challenges left",
+      hint: 'or press <kbd>Space</kbd>', edit: "Challenges", sound: "Sound",
+      won: "This is your challenge. Good luck!", recent: "Recent challenges", spinning: "Challenges are spinning… press Stop",
+      count: (n) => `${n} ${n === 1 ? "challenge" : "challenges"} in the draw`,
+      sheetTitle: "Challenge list", sheetLabel: "One challenge per line",
+      sheetNote: "Changes are saved on this device only.",
+      round: (d, n) => `${d} of ${n} drawn this round`,
+      roundNote: "Each challenge comes up once per round. When all have been drawn, a new round starts by itself.", newRound: "New round", reset: "Restore original list", save: "Save",
+      emptyList: "Add at least one challenge", lang: "عربي"
+    }
+  };
+  const CHALLENGES = [
+    "Find Santa and take a selfie with him.",
+    "Find three nutcrackers around the market and take a photo with each.",
+    "Name 5 restaurants or food vendors at the market.",
+    "Find someone drinking from a Bank al Etihad cup sleeve, snap a photo, and get back to us.",
+    "Find someone at the market who can name 3 Christmas songs. Get them to say all 3 on video.",
+    "Find an item shaped like a star, a snowflake, and a Christmas tree. Take a photo of each.",
+    "Gather 3 random people for a Christmas group photo. Bonus points if everyone’s wearing something festive.",
+    "Find someone random to sing a verse of a Christmas song with you. Or find 2 other visitors and get all 3 of you to sing one Christmas song together.",
+    "Name 5 vendors at the market that sell something sweet.",
+    "Find the 3 different Christmas decorations and take a selfie with each.",
+    "Find the smallest item being sold at the market. Bring back a photo with the vendor’s name.",
+    "Find items with each of these colours: red, green, gold, and silver. Return with 4 photos.",
+    "Find a stranger at the market and exchange your best Christmas greeting.",
+    "Visit a vendor and ask them to show you their favorite item.",
+    "Ask a vendor to teach you something in 30 seconds. It could be a craft, a trick, or a skill.",
+    "Name 5 things you’d bring to a Christmas gathering in 15 seconds.",
+    "Get your group to pose as a Christmas-card family portrait.",
+    "Create a 3-step Christmas handshake with someone at the market.",
+    "The host names 5 Christmas-related words. Repeat them backwards, in reverse order.",
+    "Describe a Christmas movie or character in 15 seconds.",
+    "Say “Santa’s seven silver sleigh bells” three times correctly without stumbling."
+  ];
+  const SAMPLE = { ar: CHALLENGES, en: CHALLENGES };
+
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem("bae-challenge:" + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+    set(k, v) { try { localStorage.setItem("bae-challenge:" + k, JSON.stringify(v)); } catch {} }
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const root = document.documentElement;
+  const reel = $("reel"), go = $("go"), result = $("result"), stage = $("stage");
+  const historyEl = $("history"), countEl = $("count");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+
+  let lang = store.get("lang", "en");
+  let custom = store.get("gifts", null);           // null → use the examples of the current language
+  // Shuffle bag: every challenge is drawn once per round; the bag refills itself, reshuffled.
+  let bag = store.get("bag", null);
+  let lastDrawn = store.get("last", null);
+  let sound = store.get("sound", true);
+  let gifts = [];
+  let history = [];
+
+  // Reel state: p = position in rows (float). Item under the centre line = round(p) mod n.
+  let p = 0, v = 0.6;                 // v in rows / second (idle drift)
+  let mode = "idle";                  // idle | accel | spin | stopping | won
+  let accelFrom = 0, accelT0 = 0;
+  let stopFrom = 0, stopDist = 0, stopT0 = 0, stopDur = 0, stopK = 3;
+  let landRow = null, landGift = null; // the row the reel stops on shows the drawn gift
+  let stopQueued = false;
+  const VMAX = 20, ACCEL_MS = 700, IDLE_V = 0.6;
+
+  const SLOTS = 7;
+  const slotEls = [];
+  for (let i = 0; i < SLOTS; i++) {
+    const s = document.createElement("div");
+    s.className = "slot";
+    const t = document.createElement("span"); t.className = "slot-text";
+    s.appendChild(t); reel.appendChild(s); slotEls.push(s);
+  }
+
+  function rowPx() { return parseFloat(getComputedStyle(root).getPropertyValue("--row")) || 136; }
+  let ROW = rowPx();
+  addEventListener("resize", () => { ROW = rowPx(); render(); });
+
+  const mod = (a, n) => ((a % n) + n) % n;
+
+  function setGifts() {
+    gifts = (Array.isArray(custom) ? custom : SAMPLE[lang]).slice();
+  }
+
+  function render() {
+    const n = gifts.length;
+    const base = Math.floor(p);
+    const frac = p - base;
+    const blur = reduce.matches ? 0 : Math.min(Math.max(v - 4, 0) / 6, 2.2);
+    const centreIdx = Math.round(p);
+    for (let k = 0; k < SLOTS; k++) {
+      const i = base + k - 3;                 // item index on the reel
+      const d = i - p;                        // distance from centre in rows (negative = above)
+      const el = slotEls[k];
+      const ad = Math.abs(d);
+      const text = n ? (i === landRow && landGift != null ? landGift : gifts[mod(i, n)]) : "—";
+      if (el.firstChild.textContent !== text) el.firstChild.textContent = text;
+      const op = Math.max(0, 1 - ad / 2.7);
+      el.style.transform = `translateY(${(d * ROW).toFixed(2)}px) scale(${(1 - Math.min(ad, 3) * 0.07).toFixed(3)})`;
+      el.style.opacity = (op * op * (mode === "won" && i !== centreIdx ? 0.55 : 1)).toFixed(3);
+      el.style.filter = blur ? `blur(${blur.toFixed(2)}px)` : "";
+      el.classList.toggle("center", i === centreIdx && ad < 0.5);
+    }
+  }
+
+  // ---- Sound: a soft click per row that passes the centre line ----
+  let ac = null, lastTickRow = 0, lastTickAt = 0;
+  function tick(strength) {
+    if (!sound || !ac) return;
+    const now = ac.currentTime;
+    if (now - lastTickAt < 0.035) return;
+    lastTickAt = now;
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = "triangle"; o.frequency.value = 1500 + Math.random() * 120;
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(0.05 * strength, now + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+    o.connect(g).connect(ac.destination); o.start(now); o.stop(now + 0.06);
+  }
+  function chime() {
+    if (!sound || !ac) return;
+    const now = ac.currentTime;
+    [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = "sine"; o.frequency.value = f;
+      const t = now + i * 0.09;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.08, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+      o.connect(g).connect(ac.destination); o.start(t); o.stop(t + 1);
+    });
+  }
+  function ensureAudio() {
+    if (!sound) return;
+    try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === "suspended") ac.resume(); } catch { ac = null; }
+  }
+
+  // ---- Animation loop ----
+  let last = performance.now();
+  function frame(now) {
+    const dt = Math.min((now - last) / 1000, 0.05);
+    last = now;
+    if (mode === "idle") {
+      v = reduce.matches ? 0 : IDLE_V; p += v * dt;
+    } else if (mode === "accel") {
+      const t = Math.min((now - accelT0) / ACCEL_MS, 1);
+      v = accelFrom + (VMAX - accelFrom) * (t * t);
+      p += v * dt;
+      if (t >= 1) mode = "spin";
+      if (stopQueued && v >= 8) { stopQueued = false; stop(); }
+    } else if (mode === "spin") {
+      v = VMAX; p += v * dt;
+    } else if (mode === "stopping") {
+      const t = Math.min((now - stopT0) / stopDur, 1);
+      const e = 1 - Math.pow(1 - t, stopK);
+      const np = stopFrom + stopDist * e;
+      v = dt > 0 ? (np - p) / dt : 0;
+      p = np;
+      if (t >= 1) { p = Math.round(p); v = 0; land(); }
+    }
+    if (landRow != null && mode !== "stopping" && mode !== "won" && Math.abs(landRow - p) > 4) { landRow = null; landGift = null; }
+    if (mode !== "idle" && mode !== "won") {
+      const r = Math.round(p);
+      if (r !== lastTickRow) { lastTickRow = r; tick(mode === "stopping" ? 1 : 0.6); }
+    }
+    if (mode !== "won") render();
+    requestAnimationFrame(frame);
+  }
+
+  function start() {
+    if (!gifts.length) return;
+    ensureAudio();
+    stopQueued = false;
+    stage.classList.remove("is-won", "is-idle");
+    swapResult(() => { result.textContent = STR[lang].spinning; });
+    if (reduce.matches) { mode = "spin"; v = VMAX; }
+    else { mode = "accel"; accelFrom = v; accelT0 = performance.now(); }
+    lastTickRow = Math.round(p);
+    setButton();
+  }
+
+  // The winner is drawn first; the reel then glides to a row ~17 rows ahead (off screen at
+  // that moment) and that row shows the drawn gift. Every gift has the same 1/n chance.
+  function stop() {
+    landGift = drawFromBag();
+    const vNow = Math.max(v, 1);
+    if (reduce.matches) {                          // no long glide: settle within half a second
+      landRow = Math.ceil(p + 4);
+      stopFrom = p; stopDist = landRow - p; stopDur = 500; stopK = 2;
+    } else {
+      landRow = Math.ceil(p + vNow * 2.6 / 3);
+      stopFrom = p; stopDist = landRow - p;
+      const T = Math.min(Math.max(3 * stopDist / vNow, 2.4), 4.4);
+      stopDur = T * 1000;
+      stopK = Math.max(1, vNow * T / stopDist);    // keeps the hand-off velocity continuous
+    }
+    stopT0 = performance.now();
+    mode = "stopping";
+    setButton();
+  }
+
+  function swapResult(fill) {                      // brand text OUT (900ms, blur) then the next text
+    clearTimeout(swapTimer);
+    const hasText = result.textContent.trim() !== "";
+    if (!hasText || reduce.matches) { result.classList.remove("out"); fill(); return; }
+    result.classList.add("out");
+    swapTimer = setTimeout(() => { result.classList.remove("out"); fill(); }, 900);
+  }
+  let swapTimer = null;
+
+  function showWon() {                             // brand text IN, word by word
+    const words = STR[lang].won.split(" ").map((w, i, all) => [w, i === all.length - 1 || /بالتوفيق|Good|luck/.test(w) ? "hl" : ""]);
+    result.replaceChildren(...words.flatMap(([w, cls], i) => {
+      const sp = document.createElement("span");
+      sp.className = "w" + (cls ? " " + cls : ""); sp.style.setProperty("--i", i); sp.textContent = w;
+      return [sp, document.createTextNode(" ")];
+    }));
+  }
+
+  function shuffled(list) {                       // Fisher–Yates with crypto randomness
+    const a = list.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(cryptoRandom() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
+  }
+  function cleanBag() {                           // keep only challenges that are still on the list
+    if (!Array.isArray(bag)) { bag = null; return; }
+    const left = gifts.slice(); const kept = [];
+    for (const g of bag) { const i = left.indexOf(g); if (i > -1) { kept.push(g); left.splice(i, 1); } }
+    bag = kept;
+  }
+  function drawFromBag() {
+    cleanBag();
+    if (!bag || !bag.length) {
+      bag = shuffled(gifts);
+      if (bag.length > 1 && bag[0] === lastDrawn) {   // no back-to-back repeat across rounds
+        const j = 1 + Math.floor(cryptoRandom() * (bag.length - 1)); [bag[0], bag[j]] = [bag[j], bag[0]];
+      }
+    }
+    const g = bag.shift();
+    lastDrawn = g;
+    store.set("bag", bag); store.set("last", g);
+    return g;
+  }
+  function drawnThisRound() { cleanBag(); return bag && bag.length ? gifts.length - bag.length : 0; }
+  function cryptoRandom() {
+    try { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] / 4294967296; } catch { return Math.random(); }
+  }
+
+  function land() {
+    mode = "won";
+    const g = landGift;
+    render();
+    stage.classList.add("is-won");
+    clearTimeout(swapTimer); result.classList.remove("out");
+    showWon(g);
+    chime();
+    try { navigator.vibrate && navigator.vibrate([30, 40, 60]); } catch {}
+    history.unshift(g); history = history.slice(0, 5); drawHistory();
+    setButton();
+  }
+
+  function setButton() {
+    const s = STR[lang];
+    go.disabled = false;
+    go.removeAttribute("aria-disabled");
+    go.classList.toggle("spinning", mode === "accel" || mode === "spin" || mode === "stopping");
+    if (!gifts.length) { go.textContent = s.empty; go.disabled = true; return; }
+    if (mode === "accel" || mode === "spin") go.textContent = s.stop;
+    else if (mode === "stopping") { go.textContent = s.stop; go.setAttribute("aria-disabled", "true"); }
+    else if (mode === "won") go.textContent = s.again;
+    else go.textContent = s.start;
+  }
+
+  function onGo() {
+    if (mode === "idle" || mode === "won") start();
+    else if (mode === "spin") stop();
+    else if (mode === "accel") { if (v >= 8) stop(); else { stopQueued = true; go.setAttribute("aria-disabled", "true"); } }
+  }
+  go.addEventListener("click", onGo);
+  addEventListener("keydown", (e) => {
+    if (!sheet.hidden) { if (e.key === "Escape") closeSheet(); return; }
+    if (e.repeat) return;
+    if ((e.code === "Space" || e.key === "Enter") && e.target === document.body) { e.preventDefault(); onGo(); }
+  });
+
+
+  function drawHistory() {
+    historyEl.replaceChildren(...history.map((g) => { const s = document.createElement("span"); s.setAttribute("role", "listitem"); s.textContent = g; return s; }));
+  }
+  function updateCount() { if (countEl) countEl.textContent = STR[lang].count(gifts.length); }
+
+  // ---- Language ----
+  function applyLang() {
+    const s = STR[lang];
+    root.lang = lang; root.dir = lang === "ar" ? "rtl" : "ltr";
+    document.title = lang === "ar" ? "تحدّي الميلاد من بنك الاتحاد" : "Bank al Etihad Christmas Challenge";
+    document.querySelectorAll("[data-t]").forEach((el) => { const v = s[el.dataset.t]; if (typeof v === "string") el.textContent = v; });
+    document.querySelectorAll("[data-t-html]").forEach((el) => { el.innerHTML = s[el.dataset.tHtml]; });
+    document.querySelectorAll("[data-t-label]").forEach((el) => el.setAttribute("aria-label", s[el.dataset.tLabel]));
+    $("langBtn").textContent = s.lang;
+    $("langBtn").setAttribute("aria-label", lang === "ar" ? "English" : "العربية");
+    clearTimeout(swapTimer); result.classList.remove("out");
+    if (mode === "won") showWon(landGift);
+    else if (!gifts.length) result.textContent = s.empty;
+    else if (mode === "accel" || mode === "spin" || mode === "stopping") result.textContent = s.spinning;
+    else result.textContent = "";
+    setButton(); updateCount();
+  }
+  $("langBtn").addEventListener("click", () => {
+    if (mode === "accel" || mode === "spin" || mode === "stopping") return;
+    lang = lang === "ar" ? "en" : "ar"; store.set("lang", lang);
+    if (!custom) {                                   // examples follow the language; same order, so a pending removal index still holds
+      setGifts();
+      if (landRow != null && landGift != null) { const i = SAMPLE[lang === "ar" ? "en" : "ar"].indexOf(landGift); if (i > -1) landGift = gifts[i]; }
+    }
+    applyLang(); render();
+  });
+
+  // ---- Sound toggle ----
+  const soundBtn = $("soundBtn");
+  function drawSound() { soundBtn.setAttribute("aria-pressed", String(sound)); }
+  soundBtn.addEventListener("click", () => { sound = !sound; store.set("sound", sound); drawSound(); if (sound) ensureAudio(); });
+
+  // ---- Settings sheet ----
+  const sheet = $("sheet"), back = $("back"), input = $("giftsInput"), roundStatus = $("roundStatus");
+  function drawRound() { roundStatus.textContent = STR[lang].round(drawnThisRound(), gifts.length); }
+  let lastFocus = null, hideTimer = null;
+  function openSheet() {
+    if (mode === "accel" || mode === "spin" || mode === "stopping") return;
+    lastFocus = document.activeElement;
+    clearTimeout(hideTimer);
+    input.value = gifts.join("\n");
+    drawRound();
+    sheet.hidden = false; back.hidden = false;
+    requestAnimationFrame(() => { sheet.classList.add("open"); back.classList.add("open"); input.focus(); });
+  }
+  function closeSheet() {
+    sheet.classList.remove("open"); back.classList.remove("open");
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => { sheet.hidden = true; back.hidden = true; }, 300);
+    lastFocus && lastFocus.focus();
+  }
+  $("editBtn").addEventListener("click", openSheet);
+  back.addEventListener("click", closeSheet);
+  $("saveBtn").addEventListener("click", () => {
+    const list = input.value.split("\n").map((s) => s.trim()).filter(Boolean);
+    if (!list.length) { input.setCustomValidity(STR[lang].emptyList); input.reportValidity(); input.setCustomValidity(""); return; }
+    const sameAsSample = list.join("\n") === SAMPLE[lang].join("\n");
+    custom = sameAsSample ? null : list;
+    store.set("gifts", custom);
+    if (list.join("\n") !== gifts.join("\n")) { bag = null; store.set("bag", null); }   // a new list starts a new round
+    landRow = null; landGift = null;
+    setGifts(); mode = "idle"; stage.classList.remove("is-won"); stage.classList.add("is-idle"); clearTimeout(swapTimer); result.classList.remove("out"); result.textContent = "";
+    updateCount(); setButton(); render(); closeSheet();
+  });
+  $("resetBtn").addEventListener("click", () => { input.value = SAMPLE[lang].join("\n"); });
+  $("newRoundBtn").addEventListener("click", () => { bag = null; store.set("bag", null); drawRound(); });
+  sheet.addEventListener("keydown", (e) => {          // keep Tab inside the sheet
+    if (e.key !== "Tab") return;
+    const f = [...sheet.querySelectorAll("textarea, input, button")];
+    const first = f[0], lastEl = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); lastEl.focus(); }
+    else if (!e.shiftKey && document.activeElement === lastEl) { e.preventDefault(); first.focus(); }
+  });
+
+  setGifts(); drawSound(); applyLang(); render();
+  requestAnimationFrame((t) => { last = t; requestAnimationFrame(frame); });
+})();
+</script>
+</body>
+</html>
