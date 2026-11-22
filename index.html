@@ -210,6 +210,7 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
   .chip { padding: 0 12px; }
   .tools { gap: 6px; }
   #editBtn [data-t="edit"] { display: none; }
+  #fsBtn { display: none; }
 }
 @media (max-height: 860px) and (min-width: 561px) { :root { --row: 124px; } }
 @media (max-height: 700px) { :root { --row: 128px; --rows: 2.2; } .go { height: 52px; } .stage { padding-block: 12px; gap: 16px; } }
@@ -305,6 +306,10 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
         <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h3l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg>
         <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h3l5-4v14l-5-4H4z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>
       </button>
+      <button class="chip" id="fsBtn" type="button" aria-pressed="false" data-t-label="fullscreen" aria-label="Full screen" hidden>
+        <svg class="off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+        <svg class="on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>
+      </button>
       <button class="chip" id="editBtn" type="button" aria-haspopup="dialog" data-t-label="edit" aria-label="الهدايا">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
         <span data-t="edit">Challenges</span>
@@ -360,7 +365,7 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
     ar: {
       brand: "بنك الاتحاد", eyebrow: "تحدّي سوق الميلاد", headline: "اكبس واكتشف تحدّيك",
       start: "ابدأ", stop: "وقّف", again: "لفّة جديدة", empty: "خلصت التحديات",
-      hint: 'أو اضغط <kbd>Space</kbd>', edit: "التحديات", sound: "الصوت",
+      hint: 'أو اضغط <kbd>Space</kbd>', edit: "التحديات", sound: "الصوت", fullscreen: "ملء الشاشة",
       won: "هذا تحدّيك. بالتوفيق!", recent: "آخر التحديات", spinning: "التحديات عم تلف… اكبس وقّف",
       count: (n) => `${n.toLocaleString("ar-EG")} ${n === 1 ? "تحدّي" : n <= 10 ? "تحديات" : "تحدّي"} بالسحب`,
       sheetTitle: "قائمة التحديات", sheetLabel: "اكتب كل تحدّي بسطر لحاله",
@@ -372,7 +377,7 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
     en: {
       brand: "Bank al Etihad", eyebrow: "Christmas market challenge", headline: "Press and get your challenge",
       start: "Start", stop: "Stop", again: "Spin again", empty: "No challenges left",
-      hint: 'or press <kbd>Space</kbd>', edit: "Challenges", sound: "Sound",
+      hint: 'or press <kbd>Space</kbd>', edit: "Challenges", sound: "Sound", fullscreen: "Full screen",
       won: "This is your challenge. Good luck!", recent: "Recent challenges", spinning: "Challenges are spinning… press Stop",
       count: (n) => `${n} ${n === 1 ? "challenge" : "challenges"} in the draw`,
       sheetTitle: "Challenge list", sheetLabel: "One challenge per line",
@@ -690,6 +695,23 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
   });
 
   // ---- Sound toggle ----
+  // ---- Full screen (iPad Safari uses the webkit-prefixed API) ----
+  const fsBtn = $("fsBtn");
+  const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+  const canFs = !!(root.requestFullscreen || root.webkitRequestFullscreen) && (document.fullscreenEnabled || document.webkitFullscreenEnabled);
+  if (canFs) fsBtn.hidden = false;
+  function drawFs() { fsBtn.setAttribute("aria-pressed", String(!!fsEl())); }
+  fsBtn.addEventListener("click", () => {
+    try {
+      const r = fsEl()
+        ? (document.exitFullscreen ? document.exitFullscreen() : document.webkitExitFullscreen())
+        : (root.requestFullscreen ? root.requestFullscreen({ navigationUI: "hide" }) : root.webkitRequestFullscreen());
+      if (r && r.catch) r.catch(() => {});
+    } catch {}
+  });
+  document.addEventListener("fullscreenchange", drawFs);
+  document.addEventListener("webkitfullscreenchange", drawFs);
+
   const soundBtn = $("soundBtn");
   function drawSound() { soundBtn.setAttribute("aria-pressed", String(sound)); }
   soundBtn.addEventListener("click", () => { sound = !sound; store.set("sound", sound); drawSound(); if (sound) ensureAudio(); });
