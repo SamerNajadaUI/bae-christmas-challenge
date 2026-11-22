@@ -473,6 +473,53 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
     try { ac = ac || new (window.AudioContext || window.webkitAudioContext)(); if (ac.state === "suspended") ac.resume(); } catch { ac = null; }
   }
 
+  // ---- Background music: a seamless loop played through Web Audio (no gap at the loop point) ----
+  const MUSIC_URL = "music.mp3", MUSIC_LOOP_S = 42.666689, MUSIC_VOL = 0.22;
+  const music = { buf: null, loading: null, src: null, gain: null, start: 0 };
+  function loadMusic() {
+    if (music.loading) return music.loading;
+    music.loading = fetch(MUSIC_URL).then((r) => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+      .then((b) => new Promise((res, rej) => ac.decodeAudioData(b, res, rej)))
+      .then((buf) => {
+        music.buf = buf;
+        const d = buf.getChannelData(0); let i = 0;               // skip any encoder padding before the first note
+        while (i < 4800 && Math.abs(d[i]) < 0.01) i++;
+        music.start = i < 4800 ? i / buf.sampleRate : 0;
+      })
+      .catch(() => { music.loading = null; });
+    return music.loading;
+  }
+  async function startMusic() {
+    if (!sound || !ac || music.src) return;
+    await loadMusic();
+    if (!music.buf || !sound || music.src) return;
+    const g = ac.createGain(), t = ac.currentTime;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(MUSIC_VOL, t + 2.5);
+    const src = ac.createBufferSource();
+    src.buffer = music.buf; src.loop = true;
+    src.loopStart = music.start;
+    src.loopEnd = Math.min(music.start + MUSIC_LOOP_S, music.buf.duration);
+    src.connect(g).connect(ac.destination);
+    src.start(t, music.start);
+    music.src = src; music.gain = g;
+  }
+  function stopMusic() {
+    if (!music.src || !ac) return;
+    const { src, gain } = music, t = ac.currentTime;
+    music.src = null;
+    gain.gain.cancelScheduledValues(t); gain.gain.setValueAtTime(gain.gain.value, t); gain.gain.linearRampToValueAtTime(0, t + 0.8);
+    try { src.stop(t + 0.85); } catch {}
+  }
+  // Browsers only allow sound after a tap, so the music starts on the first touch or key press.
+  const firstTouch = () => { ensureAudio(); startMusic(); };
+  addEventListener("pointerdown", firstTouch, { passive: true });
+  addEventListener("keydown", firstTouch);
+  document.addEventListener("visibilitychange", () => {
+    if (!ac) return;
+    if (document.hidden) ac.suspend().catch(() => {}); else if (sound) ac.resume().catch(() => {});
+  });
+
   // ---- Animation loop ----
   let last = performance.now();
   function frame(now) {
@@ -674,7 +721,7 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
 
   const soundBtn = $("soundBtn");
   function drawSound() { soundBtn.setAttribute("aria-pressed", String(sound)); }
-  soundBtn.addEventListener("click", () => { sound = !sound; store.set("sound", sound); drawSound(); if (sound) ensureAudio(); });
+  soundBtn.addEventListener("click", () => { sound = !sound; store.set("sound", sound); drawSound(); if (sound) { ensureAudio(); startMusic(); } else stopMusic(); });
 
   // ---- Settings sheet ----
   const sheet = $("sheet"), back = $("back"), input = $("giftsInput"), roundStatus = $("roundStatus");
