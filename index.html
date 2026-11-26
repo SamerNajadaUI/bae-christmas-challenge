@@ -194,8 +194,16 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
 
 /* Footer */
 .foot { display: flex; justify-content: space-between; gap: 16px; font-size: 12px; line-height: 1.2; letter-spacing: 0.01em; color: var(--ink-light); flex-wrap: wrap; }
-.history { min-height: 22px; display: flex; gap: 8px; flex-wrap: wrap; min-width: 0; }
-.history span { unicode-bidi: plaintext; font-family: var(--font-en); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 4px 10px; border-radius: 12px; background: var(--orange-light); color: var(--ink-medium); }
+.sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.drawn { list-style: none; margin: 0; padding: 0; flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; overscroll-behavior: contain; }
+.drawn li { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px; border: 1px solid var(--stone-light); border-radius: 16px; background: var(--white); }
+.drawn li.latest { border-color: var(--orange-soft); background: var(--orange-light); }
+.drawn .q { font-family: var(--font-en); unicode-bidi: plaintext; font-size: 16px; line-height: 1.2; letter-spacing: 0; color: var(--ink); }
+.drawn .del { display: inline-flex; align-items: center; gap: 6px; height: 44px; padding: 0 16px; border-radius: 22px; border: 1px solid var(--stone-light); background: var(--white); color: var(--orange-dark); font-size: 16px; line-height: 1.2; cursor: pointer; }
+.drawn .del:hover { border-color: var(--orange-medium); }
+.drawn .del svg { width: 18px; height: 18px; }
+.drawn .del:focus-visible, #restoreAll:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.drawn-empty { flex: 1; margin: 0; font-size: 16px; line-height: 1.2; color: var(--ink-light); }
 
 /* Settings sheet */
 .sheet-back { position: fixed; inset: 0; background: rgba(25,24,30,.24); z-index: 20; opacity: 0; transition: opacity .25s; }
@@ -373,18 +381,17 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
   </main>
 
   <footer class="foot">
-    <div class="history" id="history" role="list" data-t-label="recent" aria-label="آخر النتائج"></div>
   </footer>
 </div>
 
 <div class="sheet-back" id="back" hidden></div>
 <aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
-  <h2 id="sheetTitle" data-t="sheetTitle">قائمة الهدايا</h2>
-  <label class="field" for="giftsInput">
-    <span data-t="sheetLabel">اكتب كل هدية بسطر لحالها</span>
-    <textarea id="giftsInput" spellcheck="false"></textarea>
-    <span class="note" data-t="sheetNote">الأسماء الموجودة هي أمثلة. التعديلات بتنحفظ على هذا الجهاز فقط.</span>
-  </label>
+  <div class="sheet-head">
+    <h2 id="sheetTitle" data-t="sheetTitle">Drawn challenges</h2>
+    <button class="chip" id="closeSheet" type="button" data-t-label="close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
   <div class="round">
     <div class="round-text">
       <span id="roundStatus"></span>
@@ -392,9 +399,10 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
     </div>
     <button class="btn small" id="newRoundBtn" type="button" data-t="newRound">New round</button>
   </div>
+  <ul class="drawn" id="drawnList"></ul>
+  <p class="drawn-empty" id="drawnEmpty" data-t="emptyDrawn" hidden>Nothing drawn yet.</p>
   <div class="actions">
-    <button class="btn" id="resetBtn" type="button" data-t="reset">رجّع الأمثلة</button>
-    <button class="btn primary" id="saveBtn" type="button" data-t="save">حفظ</button>
+    <button class="btn" id="restoreAll" type="button"></button>
   </div>
 </aside>
 
@@ -407,8 +415,9 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
       hint: 'أو اضغط <kbd>Space</kbd>', edit: "التحديات", sound: "الصوت", fullscreen: "ملء الشاشة",
       won: "هذا تحدّيك. بالتوفيق!", recent: "آخر التحديات", spinning: "التحديات عم تلف… اكبس وقّف",
       count: (n) => `${n.toLocaleString("ar-EG")} ${n === 1 ? "تحدّي" : n <= 10 ? "تحديات" : "تحدّي"} بالسحب`,
-      sheetTitle: "قائمة التحديات", sheetLabel: "اكتب كل تحدّي بسطر لحاله",
-      sheetNote: "التعديلات بتنحفظ على هذا الجهاز فقط.",
+      sheetTitle: "التحديات يلي طلعت", close: "سكّر", del: "احذف",
+      emptyDrawn: "لسا ما طلع ولا تحدّي. التحديات بتظهر هون أول ما تطلع.",
+      restoreAll: (n) => n ? `رجّع كل الأسئلة (${n.toLocaleString("ar-EG")} محذوف)` : "كل الأسئلة موجودة",
       round: (d, n) => `طلع ${d.toLocaleString("ar-EG")} من ${n.toLocaleString("ar-EG")} بهاي الجولة`,
       roundNote: "كل تحدّي بيطلع مرة وحدة بالجولة. لما يطلعوا كلهم بتبلّش جولة جديدة لحالها.", newRound: "جولة جديدة", reset: "رجّع القائمة الأصلية", save: "حفظ",
       emptyList: "ضيف تحدّي واحد على الأقل", lang: "EN"
@@ -419,8 +428,9 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
       hint: 'or press <kbd>Space</kbd>', edit: "Challenges", sound: "Sound", fullscreen: "Full screen",
       won: "This is your challenge. Good luck!", recent: "Recent challenges", spinning: "Challenges are spinning… press Stop",
       count: (n) => `${n} ${n === 1 ? "challenge" : "challenges"} in the draw`,
-      sheetTitle: "Challenge list", sheetLabel: "One challenge per line",
-      sheetNote: "Changes are saved on this device only.",
+      sheetTitle: "Drawn challenges", close: "Close", del: "Delete",
+      emptyDrawn: "Nothing drawn yet. Challenges show up here as soon as they're drawn.",
+      restoreAll: (n) => n ? `Restore all questions (${n} removed)` : "All questions are in the draw",
       round: (d, n) => `${d} of ${n} drawn this round`,
       roundNote: "Each challenge comes up once per round. When all have been drawn, a new round starts by itself.", newRound: "New round", reset: "Restore original list", save: "Save",
       emptyList: "Add at least one challenge", lang: "عربي"
@@ -498,17 +508,18 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
   const $ = (id) => document.getElementById(id);
   const root = document.documentElement;
   const reel = $("reel"), go = $("go"), result = $("result"), stage = $("stage");
-  const historyEl = $("history"), countEl = $("count");
+  const countEl = $("count");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)");
 
   let lang = store.get("lang", "en");
-  let custom = store.get("gifts", null);           // null → use the examples of the current language
+  // The question list is fixed in the page. Staff can only remove a question from the draw (and restore all).
+  let removed = store.get("removed", []); if (!Array.isArray(removed)) removed = [];
+  let drawnLog = store.get("log", []); if (!Array.isArray(drawnLog)) drawnLog = [];   // newest first
   // Shuffle bag: every challenge is drawn once per round; the bag refills itself, reshuffled.
   let bag = store.get("bag", null);
   let lastDrawn = store.get("last", null);
   let sound = store.get("sound", true);
   let gifts = [];
-  let history = [];
 
   // Reel state: p = position in rows (float). Item under the centre line = round(p) mod n.
   let p = 0, v = 0.6;                 // v in rows / second (idle drift)
@@ -559,7 +570,7 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
   const mod = (a, n) => ((a % n) + n) % n;
 
   function setGifts() {
-    gifts = (Array.isArray(custom) ? custom : SAMPLE[lang]).slice();
+    gifts = SAMPLE[lang].filter((q) => !removed.includes(q));
   }
 
   function render() {
@@ -783,7 +794,7 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
     showWon(g);
     chime();
     try { navigator.vibrate && navigator.vibrate([30, 40, 60]); } catch {}
-    history.unshift(g); history = history.slice(0, 5); drawHistory();
+    drawnLog = [g, ...drawnLog.filter((x) => x !== g)].slice(0, 200); store.set("log", drawnLog);
     setButton();
   }
 
@@ -873,9 +884,7 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
   });
 
 
-  function drawHistory() {
-    historyEl.replaceChildren(...history.map((g) => { const s = document.createElement("span"); s.setAttribute("role", "listitem"); s.textContent = g; return s; }));
-  }
+
   function updateCount() { if (countEl) countEl.textContent = STR[lang].count(gifts.length); }
 
   // ---- Language ----
@@ -898,10 +907,7 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
   $("langBtn").addEventListener("click", () => {
     if (mode === "accel" || mode === "spin" || mode === "stopping") return;
     lang = lang === "ar" ? "en" : "ar"; store.set("lang", lang);
-    if (!custom) {                                   // examples follow the language; same order, so a pending removal index still holds
-      setGifts();
-      if (landRow != null && landGift != null) { const i = SAMPLE[lang === "ar" ? "en" : "ar"].indexOf(landGift); if (i > -1) landGift = gifts[i]; }
-    }
+    setGifts();
     applyLang(); render(); fit();
   });
 
@@ -928,17 +934,58 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
   soundBtn.addEventListener("click", () => { sound = !sound; store.set("sound", sound); drawSound(); if (sound) { ensureAudio(); startMusic(); } else stopMusic(); });
 
   // ---- Settings sheet ----
-  const sheet = $("sheet"), back = $("back"), input = $("giftsInput"), roundStatus = $("roundStatus");
+  const sheet = $("sheet"), back = $("back"), roundStatus = $("roundStatus");
+  const drawnList = $("drawnList"), drawnEmpty = $("drawnEmpty"), restoreBtn = $("restoreAll");
   function drawRound() { roundStatus.textContent = STR[lang].round(drawnThisRound(), gifts.length); }
+  const trashIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>';
+  function drawPanel() {
+    const s = STR[lang];
+    const shown = drawnLog.filter((q) => !removed.includes(q) && SAMPLE[lang].includes(q));
+    drawnList.replaceChildren(...shown.map((q, i) => {
+      const li = document.createElement("li"); if (i === 0) li.className = "latest";
+      const t = document.createElement("span"); t.className = "q"; t.textContent = q;
+      const b = document.createElement("button"); b.type = "button"; b.className = "del"; b.dataset.q = q;
+      b.innerHTML = trashIcon; b.append(s.del);
+      b.setAttribute("aria-label", s.del + ": " + q);
+      li.append(t, b); return li;
+    }));
+    drawnEmpty.hidden = shown.length > 0;
+    const n = removed.filter((q) => SAMPLE[lang].includes(q)).length;
+    restoreBtn.textContent = s.restoreAll(n); restoreBtn.disabled = n === 0;
+    drawRound();
+  }
+  function afterListChange() {
+    setGifts(); cleanBag(); store.set("bag", bag);
+    if (!gifts.length) { mode = "idle"; landRow = null; landGift = null; stage.classList.remove("is-won"); stage.classList.add("is-idle"); result.textContent = STR[lang].empty; }
+    setButton(); render(); fit(); drawPanel();
+  }
+  drawnList.addEventListener("click", (e) => {
+    const b = e.target.closest(".del"); if (!b) return;
+    const q = b.dataset.q; if (!q || removed.includes(q)) return;
+    const next = b.closest("li").nextElementSibling || b.closest("li").previousElementSibling;
+    removed.push(q); store.set("removed", removed);
+    afterListChange();
+    const f = next && drawnList.querySelector(`.del[data-q="${CSS.escape(next.querySelector(".del").dataset.q)}"]`);
+    (f || $("closeSheet")).focus();
+  });
+  restoreBtn.addEventListener("click", () => {
+    const back = removed.slice(); removed = []; store.set("removed", removed);
+    setGifts();
+    if (Array.isArray(bag) && bag.length) {             // restored questions join the current round at random places
+      for (const q of back) if (!bag.includes(q)) bag.splice(Math.floor(cryptoRandom() * (bag.length + 1)), 0, q);
+      store.set("bag", bag);
+    }
+    if (mode === "idle" && result.textContent === STR[lang].empty) result.textContent = "";
+    afterListChange();
+  });
   let lastFocus = null, hideTimer = null;
   function openSheet() {
     if (mode === "accel" || mode === "spin" || mode === "stopping") return;
     lastFocus = document.activeElement;
     clearTimeout(hideTimer);
-    input.value = gifts.join("\n");
-    drawRound();
+    drawPanel();
     sheet.hidden = false; back.hidden = false;
-    requestAnimationFrame(() => { sheet.classList.add("open"); back.classList.add("open"); input.focus(); });
+    requestAnimationFrame(() => { sheet.classList.add("open"); back.classList.add("open"); $("closeSheet").focus(); });
   }
   function closeSheet() {
     sheet.classList.remove("open"); back.classList.remove("open");
@@ -947,23 +994,12 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
     lastFocus && lastFocus.focus();
   }
   $("editBtn").addEventListener("click", openSheet);
+  $("closeSheet").addEventListener("click", closeSheet);
   back.addEventListener("click", closeSheet);
-  $("saveBtn").addEventListener("click", () => {
-    const list = input.value.split("\n").map((s) => s.trim()).filter(Boolean);
-    if (!list.length) { input.setCustomValidity(STR[lang].emptyList); input.reportValidity(); input.setCustomValidity(""); return; }
-    const sameAsSample = list.join("\n") === SAMPLE[lang].join("\n");
-    custom = sameAsSample ? null : list;
-    store.set("gifts", custom);
-    if (list.join("\n") !== gifts.join("\n")) { bag = null; store.set("bag", null); }   // a new list starts a new round
-    landRow = null; landGift = null;
-    setGifts(); mode = "idle"; stage.classList.remove("is-won"); stage.classList.add("is-idle"); clearTimeout(swapTimer); result.classList.remove("out"); result.textContent = "";
-    updateCount(); setButton(); render(); fit(); closeSheet();
-  });
-  $("resetBtn").addEventListener("click", () => { input.value = SAMPLE[lang].join("\n"); });
   $("newRoundBtn").addEventListener("click", () => { bag = null; store.set("bag", null); drawRound(); });
   sheet.addEventListener("keydown", (e) => {          // keep Tab inside the sheet
     if (e.key !== "Tab") return;
-    const f = [...sheet.querySelectorAll("textarea, input, button")];
+    const f = [...sheet.querySelectorAll("button:not(:disabled)")];
     const first = f[0], lastEl = f[f.length - 1];
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); lastEl.focus(); }
     else if (!e.shiftKey && document.activeElement === lastEl) { e.preventDefault(); first.focus(); }

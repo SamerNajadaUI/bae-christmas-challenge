@@ -4,5 +4,5 @@ A one-page challenge draw for the Christmas market. Press **Start**, the challen
 
 - Every challenge comes up once per round (shuffle bag); a new round starts by itself.
 - The round is saved in the browser of the device it runs on (one iPad at the stand).
-- Edit the list from the **Challenges** button.
+- The **Challenges** button lists the drawn challenges; delete one to take it out of the draw, or restore all.
 - English and Arabic interface.
