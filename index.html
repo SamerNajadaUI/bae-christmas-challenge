@@ -1001,7 +1001,16 @@ kbd { font-family: var(--font-en); font-size: 12px; padding: 2px 6px; border: 1p
   $("editBtn").addEventListener("click", openSheet);
   $("closeSheet").addEventListener("click", closeSheet);
   back.addEventListener("click", closeSheet);
-  $("newRoundBtn").addEventListener("click", () => { bag = null; store.set("bag", null); drawRound(); });
+  $("newRoundBtn").addEventListener("click", () => {      // a fresh round: clear the drawn list, reshuffle everything
+    bag = shuffled(gifts);
+    if (bag.length > 1 && bag[0] === lastDrawn) { const j = 1 + Math.floor(cryptoRandom() * (bag.length - 1)); [bag[0], bag[j]] = [bag[j], bag[0]]; }
+    store.set("bag", bag);
+    drawnLog = []; store.set("log", drawnLog);
+    landRow = null; landGift = null; mode = "idle";
+    stage.classList.remove("is-won"); stage.classList.add("is-idle");
+    clearTimeout(swapTimer); result.classList.remove("out"); result.textContent = "";
+    setButton(); render(); drawPanel();
+  });
   sheet.addEventListener("keydown", (e) => {          // keep Tab inside the sheet
     if (e.key !== "Tab") return;
     const f = [...sheet.querySelectorAll("button:not(:disabled)")];
